@@ -193,6 +193,20 @@ div.board{margin:12px 0 4px}div.board ol{list-style:none;margin:0;padding:0}div.
 #phCut{position:absolute;inset:0;background:#000;opacity:0;transition:opacity .15s}
 #phSkip{position:absolute;right:12px;bottom:30px;pointer-events:auto;background:#000a;color:#fff;border:1px solid #fff5;border-radius:999px;padding:7px 14px;font:700 12px var(--ff);cursor:pointer}
 body.replaying #hud,body.replaying #ipad,body.replaying #xhair,body.replaying #hov,body.replaying #menuBtn,body.replaying #micBtn,body.replaying #vig,body.replaying #hurt,body.replaying #big,body.replaying #msg{display:none!important}
+
+.nav{display:flex;align-items:center;gap:6px;margin:0 0 18px;padding:0}
+.nav button{background:#ffffff0d;border:0;color:#cdd5e4;font:900 italic 15px var(--ff);letter-spacing:2px;padding:11px 22px;cursor:pointer;clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%);transition:.12s}
+.nav button:hover{background:#ffffff22;color:#fff}.nav button.on{background:linear-gradient(100deg,#ffb347,#ff5a1a);color:#1a0d00}
+#pcard{margin-left:auto;display:flex;align-items:center;gap:10px;background:#00000066;padding:6px 18px 6px 8px;clip-path:polygon(0 0,100% 0,calc(100% - 12px) 100%,0 100%)}
+#pcard i{width:34px;height:34px;border-radius:50%;background:linear-gradient(145deg,var(--acc2),var(--acc));display:block}
+#pcard span{font:900 italic 15px var(--ff);text-transform:uppercase;letter-spacing:1px}#pcard small{display:block;color:var(--dim);font:700 11px var(--ff);letter-spacing:1px}
+@media (max-width:900px){.nav{flex-wrap:wrap}.nav button{padding:9px 14px;font-size:13px}#pcard{display:none}}
+.w-sakura .art{background:linear-gradient(#8fc4ee,#f2dde4 58%,#9bbf6a 59%)}
+.w-toscane .art{background:linear-gradient(#5a9ee0,#f0e6cc 58%,#b4b862 59%)}
+.w-savanne .art{background:linear-gradient(#5aa8e6,#f4e2b8 58%,#c4b062 59%)}
+.w-toendra .art{background:linear-gradient(#6a8fb0,#c8d2d8 58%,#889a70 59%)}
+.w-mistvallei .art{background:linear-gradient(#7d8c9a,#aab4bc 58%,#4a5a48 59%)}
+.w-jungle .art{background:linear-gradient(#5a8f9a,#a8c0a8 58%,#2f5a30 59%)}
 #ipad.nopad{display:none!important}
 .sl{margin:12px 0}.sl label{display:flex;justify-content:space-between;font:700 13px var(--ff);color:var(--dim);margin-bottom:6px}.sl b{color:var(--acc2)}.sl input{width:100%;accent-color:var(--acc)}
 </style>
@@ -233,6 +247,7 @@ body.replaying #hud,body.replaying #ipad,body.replaying #xhair,body.replaying #h
     <div class="road"></div>
   </div>
   <div class="wrap">
+    <nav class="nav" id="nav"><button data-t="play" class="on">SPELEN</button><button data-t="garage">GARAGE</button><button data-t="maps">MAPS</button><button data-t="account">ACCOUNT</button><button data-t="opties">OPTIES</button><div id="pcard"><i></i><span id="pcName">Gast</span><small id="pcSub">0/8 outfits</small></div></nav>
     <header class="top">
       <div class="brand"><div class="logo">LLL</div><div><b>LINKS LINKS LINKS</b><small>CO-OP RALLY VOOR TWEE</small></div></div>
       <div class="net" id="netStat"><i></i><span>Online spelen beschikbaar</span></div>
@@ -240,17 +255,17 @@ body.replaying #hud,body.replaying #ipad,body.replaying #xhair,body.replaying #h
     <div class="grid">
       <section class="panel" id="mainPanel">
         <div id="m-main">
-          <h1>Eén rijdt blind.<br><em>De ander heeft de kaart.</em></h1>
-          <p class="lead">Je rijdt door mist, modder en bergen en ziet bijna niks. Je copiloot ziet de weg op een iPad. Praat met elkaar, anders vlieg je het ravijn in. Of uit de auto.</p>
+          <h1 data-tab="play">Eén rijdt blind.<br><em>De ander heeft de kaart.</em></h1>
+          <p class="lead" data-tab="play">Je rijdt door mist, modder en bergen en ziet bijna niks. Je copiloot ziet de weg op een iPad. Praat met elkaar, anders vlieg je het ravijn in. Of uit de auto.</p>
 
-          <div class="step"><h3><span>1</span>Jouw rol</h3>
+          <div class="step" data-tab="play"><h3><span>1</span>Jouw rol</h3>
             <div class="chips" id="roleChips">
               <div class="chip sel" data-r="driver"><b>Bestuurder</b><small>Jij rijdt. Je ziet weinig.</small></div>
               <div class="chip" data-r="copilot"><b>Copiloot</b><small>Jij leest de kaart voor.</small></div>
             </div>
           </div>
 
-          <div class="step"><h3><span>2</span>Auto</h3>
+          <div class="step" data-tab="garage"><h3><span>1</span>Auto</h3>
             <div class="chips" id="carChips">
               <div class="chip sel" data-c="race"><div class="art" style="background:#18203a"><svg viewBox="0 0 120 46"><path d="M8 32h104l-6-9-22-3-14-9H46l-14 9-17 3z" fill="#e8283c"/><path d="M47 12h24l12 8H35z" fill="#9fc3e8"/><circle cx="32" cy="33" r="7" fill="#111"/><circle cx="88" cy="33" r="7" fill="#111"/></svg></div><b>Rallyauto</b><small>Snel en wendbaar.</small></div>
               <div class="chip" data-c="jeep"><div class="art" style="background:#1d2a1b"><svg viewBox="0 0 120 46"><path d="M10 32V16h26l5-7h38l4 7h27v16z" fill="#58763a"/><path d="M43 11h34l3 5H40z" fill="#9fc3e8"/><circle cx="34" cy="33" r="8" fill="#111"/><circle cx="88" cy="33" r="8" fill="#111"/></svg></div><b>Jeep</b><small>Zwaar, goed in modder.</small></div>
@@ -258,12 +273,12 @@ body.replaying #hud,body.replaying #ipad,body.replaying #xhair,body.replaying #h
             </div>
           </div>
 
-          <div class="step"><h3><span>3</span>Outfit</h3>
+          <div class="step" data-tab="garage"><h3><span>2</span>Outfit</h3>
             <div class="chips" id="outfitChips"></div>
             <div class="seg hide" id="ownerBox" style="margin-top:8px"><div class="chip" id="ownerPaint"><b>Owner-lak (goud): uit</b></div></div>
           </div>
 
-          <div class="step"><h3><span>4</span>Wereld</h3>
+          <div class="step" data-tab="maps"><h3><span>1</span>Map</h3>
             <div class="chips" id="worldChips">
               <div class="chip sel w-alps" data-w="alps"><div class="art"></div><b>Alpen</b></div>
               <div class="chip w-forest" data-w="forest"><div class="art"></div><b>Bos</b></div>
@@ -273,15 +288,21 @@ body.replaying #hud,body.replaying #ipad,body.replaying #xhair,body.replaying #h
               <div class="chip w-canyon" data-w="canyon"><div class="art"></div><b>Canyon</b></div>
               <div class="chip w-storm" data-w="storm"><div class="art"></div><b>Regen</b></div>
               <div class="chip w-volcano" data-w="volcano"><div class="art"></div><b>Vulkaan</b></div>
+              <div class="chip w-sakura" data-w="sakura"><div class="art"></div><b>Sakura</b></div>
+              <div class="chip w-toscane" data-w="toscane"><div class="art"></div><b>Toscane</b></div>
+              <div class="chip w-savanne" data-w="savanne"><div class="art"></div><b>Savanne</b></div>
+              <div class="chip w-toendra" data-w="toendra"><div class="art"></div><b>Toendra</b></div>
+              <div class="chip w-mistvallei" data-w="mistvallei"><div class="art"></div><b>Mistvallei</b></div>
+              <div class="chip w-jungle" data-w="jungle"><div class="art"></div><b>Jungle</b></div>
               <div class="chip w-random" data-w="random"><div class="art"></div><b>Random</b></div>
             </div>
           </div>
 
-          <div class="step"><h3><span>5</span>Licht of donker</h3>
-            <div class="chips" id="dayChips"><div class="chip sel" data-d="0"><b>Licht</b><small>Dag, goed zicht.</small></div><div class="chip" data-d="1"><b>Donker</b><small>Nacht. Gebruik je koplampen.</small></div></div>
+          <div class="step" data-tab="maps"><h3><span>2</span>Licht of donker</h3>
+            <div class="chips" id="dayChips"><div class="chip sel" data-d="0"><b>Licht</b><small>Dag, goed zicht.</small></div><div class="chip" data-d="1"><b>Schemer</b><small>Zonsondergang.</small></div><div class="chip" data-d="2"><b>Donker</b><small>Nacht. Koplampen aan.</small></div></div>
           </div>
 
-          <div class="step"><h3><span>6</span>Zicht en graphics</h3>
+          <div class="step" data-tab="opties"><h3><span>1</span>Zicht en graphics</h3>
             <div class="seg" id="fogChips">
               <div class="chip" data-f="0.55"><b>Mist: dik</b></div>
               <div class="chip sel" data-f="1"><b>Mist: normaal</b></div>
@@ -293,12 +314,12 @@ body.replaying #hud,body.replaying #ipad,body.replaying #xhair,body.replaying #h
             </div>
           </div>
 
-          <div class="actions">
+          <div class="actions" data-tab="play">
             <button class="btn pri" id="bHost">Kamer maken</button>
             <div class="join"><input id="codeIn" maxlength="4" placeholder="CODE" autocomplete="off"><button class="btn alt" id="bJoin">Meedoen met code</button></div>
             <button class="btn alt" id="bSolo">Solo rijden</button>
           </div>
-          <div id="err"></div>
+          <div id="err" data-tab="play garage"></div>
         </div>
 
         <div id="m-wait" class="hide" style="text-align:center">
@@ -312,18 +333,21 @@ body.replaying #hud,body.replaying #ipad,body.replaying #xhair,body.replaying #h
       </section>
 
       <aside class="panel side">
-        <h2>Account</h2>
+<div data-tab="play garage maps"><h2>Jouw keuze</h2>
+        <div class="pv"><b id="pvTitle">Rallyauto in de Alpen</b><p id="pvText"></p></div>
+        </div>
+<div data-tab="account"><h2>Account</h2>
         <div id="acct" class="acct">
           <div id="acctIn"><input id="aName" maxlength="16" placeholder="Naam" autocomplete="username"><input id="aPass" type="password" placeholder="Wachtwoord" autocomplete="current-password"><div class="two"><button class="btn pri" id="bLogin">Inloggen</button><button class="btn alt" id="bSignup">Account maken</button></div></div>
           <div id="acctOut" class="hide"><b id="acctWho"></b><button class="btn alt" id="bLogout">Uitloggen</button></div>
           <small id="acctNote"></small><div id="acctErr"></div>
         </div>
-        <h2 id="lbTitle">Ranglijst</h2>
+        </div>
+<div data-tab="maps play"><h2 id="lbTitle">Ranglijst</h2>
         <ol id="lb" class="board"></ol>
 
-        <h2>Jouw keuze</h2>
-        <div class="pv"><b id="pvTitle">Rallyauto in de Alpen</b><p id="pvText"></p></div>
-        <h2>Besturing</h2>
+        </div>
+<div data-tab="opties"><h2>Besturing</h2>
         <div class="keys">
           <kbd>W / S</kbd><span>Gas en rem</span>
           <kbd>A / D</kbd><span>Sturen</span>
@@ -336,7 +360,8 @@ body.replaying #hud,body.replaying #ipad,body.replaying #xhair,body.replaying #h
           <kbd>T</kbd><span>iPad formaat</span>
           <kbd>M</kbd><span>Pauze en menu</span>
         </div>
-      </aside>
+      </div>
+</aside>
     </div>
   </div>
 </div>
@@ -385,7 +410,7 @@ body.replaying #hud,body.replaying #ipad,body.replaying #xhair,body.replaying #h
 <div id="phone" class="hide"><div id="phFrame"><div id="phIsland"></div><div id="phRec"><i></i><span id="phTime">REC 0:00</span></div><div id="phBat"><u></u></div><div id="phTag"></div><div id="phShutter"></div><div id="phCut"></div><button id="phSkip">Overslaan</button></div></div>
 <audio id="voiceOut" autoplay></audio>
 
-<script>window.LLL_CONFIG={url:"",key:"",owners:["owner"],mods:["moderator"]};</script>
+<script>window.LLL_CONFIG={url:"",key:"",owners:["owner"],mods:["moderator"],leaders:["leider"]};</script>
 <script>/**
  * @license
  * Copyright 2010-2021 Three.js Authors
@@ -518,7 +543,7 @@ function makeTrack(seed,tp){
 const THEMES={
   alps:{label:'Alpen',fogHex:0xc9d7e4,skyTop:0x4a82c6,gnd:0x55603f,sunCol:[1,.9,.7],sunHex:0xfff0d8,sunI:1.5,hemiS:0xdbe8f8,hemiG:0x55603f,hemiI:.9,envI:.6,
     asphalt:0x56585f,line:0xe0e0de,grass:0x869f5e,rockA:0xe0d4c0,rockB:0xc8baa6,slopeHi:0x7a9654,slopeLo:0x58764a,floor:0x40583a,bush:0x5c8644,
-    ridges:[0x8ea3bb,0xa3b5c9,0xb7c6d6],fog:95,trees:'conifer',weather:null,grip:1,lights:false,stars:0,roadRough:.9,mud:.18,expo:1,sign:'#f2c230',cloud:.6,cloudCol:0xffffff,sideP:{drop:.16,wall:.14,forest:.7}},
+    ridges:[0x8ea3bb,0xa3b5c9,0xb7c6d6],fog:95,snowCap:.9,trees:'conifer',weather:null,grip:1,lights:false,stars:0,roadRough:.9,mud:.18,expo:1,sign:'#f2c230',cloud:.6,cloudCol:0xffffff,sideP:{drop:.16,wall:.14,forest:.7}},
   snow:{label:'Sneeuw',fogHex:0xdce5ee,skyTop:0x93a9c3,gnd:0xdfe7ef,sunCol:[.9,.95,1],sunHex:0xf4f6ff,sunI:1.1,hemiS:0xe8f0fa,hemiG:0xc9d3de,hemiI:1.0,envI:.7,
     asphalt:0x6f727b,line:0xeeeeee,grass:0xf2f6fa,rockA:0xa9aeb8,rockB:0x8f95a0,slopeHi:0xf3f7fb,slopeLo:0xdbe5ee,floor:0xe4ecf3,bush:0xf3f7fb,
     ridges:[0xb5c3d3,0xc6d2df,0xd5dfe9],fog:70,trees:'snowpine',weather:'snow',grip:.62,lights:false,stars:0,roadRough:.55,mud:.05,expo:1,sign:'#f2c230',cloud:.95,cloudCol:0xd9dfe6,sideP:{drop:.15,wall:.15,forest:.7}},
@@ -540,6 +565,24 @@ const THEMES={
   volcano:{label:'Vulkaan',fogHex:0x6e5a52,skyTop:0x4a3a44,gnd:0x2a2624,sunCol:[1,.6,.35],sunHex:0xff9a5a,sunI:1.2,hemiS:0xc08a70,hemiG:0x2a2624,hemiI:.8,envI:.4,
     asphalt:0x2f2e32,line:0xe0c9a0,grass:0x3a342f,rockA:0x4a3a34,rockB:0x35292a,slopeHi:0x4a403a,slopeLo:0x2f2826,floor:0x221e1c,bush:0x4a3a30,
     ridges:[0x4a3a3a,0x5a4642,0x6a524c],fog:75,trees:'darkpine',weather:'dust',grip:.85,lights:false,stars:0,roadRough:.9,mud:0,expo:1,sign:'#f2c230',cloud:.9,cloudCol:0x5a4a48,sideP:{drop:.25,wall:.4,forest:.35}}
+  ,sakura:{label:'Sakura',fogHex:0xf2dde4,skyTop:0x7fb4e6,gnd:0x8aa860,sunCol:[1,.92,.85],sunHex:0xfff0e0,sunI:1.5,hemiS:0xffeef2,hemiG:0x8aa860,hemiI:1,envI:.6,
+    asphalt:0x5c5d63,line:0xf0f0ee,grass:0x9bbf6a,rockA:0xcfc4bc,rockB:0xb3a79f,slopeHi:0x8fb25e,slopeLo:0x6f9a4e,floor:0x5a7f45,bush:0x7aa653,
+    ridges:[0xb8a6c8,0xcdbcd8,0xdfd2e8],fog:100,trees:'sakura',weather:null,grip:1,lights:false,stars:0,roadRough:.8,mud:.05,expo:1,sign:'#f2c230',cloud:.7,cloudCol:0xffffff,sideP:{drop:.05,wall:.1,forest:.85}},
+  savanne:{label:'Savanne',fogHex:0xf4e2b8,skyTop:0x5aa8e6,gnd:0xc9b060,sunCol:[1,.88,.6],sunHex:0xffe0a0,sunI:1.8,hemiS:0xfff2d0,hemiG:0xb89a50,hemiI:.85,envI:.5,
+    asphalt:0x625c55,line:0xf0e8d0,grass:0xc4b062,rockA:0xb89a74,rockB:0x9a7e5c,slopeHi:0xc9b66a,slopeLo:0xa89450,floor:0xb09848,bush:0x9c9a4a,
+    ridges:[0xc4a876,0xd4bc8c,0xe2d0a6],fog:130,trees:'savanna',weather:null,grip:.95,lights:false,stars:0,roadRough:.95,mud:0,expo:1,sign:'#f2c230',cloud:.3,cloudCol:0xfff0dc,sideP:{drop:.2,wall:.15,forest:.35}},
+  toendra:{label:'Toendra',fogHex:0xc8d2d8,skyTop:0x6a8fb0,gnd:0x7a8a6a,sunCol:[.95,.97,1],sunHex:0xf0f4ff,sunI:1.1,hemiS:0xdfe9f2,hemiG:0x6f7d66,hemiI:.95,envI:.6,
+    asphalt:0x585c62,line:0xe8e8e8,grass:0x889a70,rockA:0x9aa0a4,rockB:0x7e868c,slopeHi:0x8c9c78,slopeLo:0x6c7c60,floor:0x62705a,bush:0x7a8a62,
+    ridges:[0x8a9aae,0x9eacbd,0xb2bfcc],fog:90,snowCap:.5,trees:'tundra',weather:null,grip:.9,lights:false,stars:0,roadRough:.7,mud:.2,expo:1,sign:'#f2c230',cloud:.8,cloudCol:0xdde4ea,sideP:{drop:.25,wall:.4,forest:.2}},
+  jungle:{label:'Jungle',fogHex:0xa8c0a8,skyTop:0x5a8f9a,gnd:0x2f5a30,sunCol:[1,.95,.75],sunHex:0xfff0c0,sunI:1.2,hemiS:0xc8e0c0,hemiG:0x2a4a2a,hemiI:.9,envI:.4,
+    asphalt:0x4a4c50,line:0xe0e0d0,grass:0x4a8a40,rockA:0x8a8a78,rockB:0x6f705f,slopeHi:0x3f7a38,slopeLo:0x2c5a2c,floor:0x234a26,bush:0x2f6a30,
+    ridges:[0x5a8a6a,0x6f9c7e,0x84ae92],fog:60,trees:'jungle',weather:'rain',grip:.78,lights:false,stars:0,roadRough:.4,mud:.5,expo:1,sign:'#f2c230',cloud:.9,cloudCol:0xb8c8b8,sideP:{drop:.05,wall:.1,forest:.9}},
+  mistvallei:{label:'Mistvallei',fogHex:0xaab4bc,skyTop:0x7d8c9a,gnd:0x4a5a48,sunCol:[.85,.9,.95],sunHex:0xdfe6ee,sunI:.8,hemiS:0xc0cad4,hemiG:0x46543f,hemiI:.9,envI:.4,
+    asphalt:0x4a4d54,line:0xd8d8d4,grass:0x66805a,rockA:0x8e9498,rockB:0x737a80,slopeHi:0x5f7a52,slopeLo:0x48603f,floor:0x3a4c36,bush:0x4a6a44,
+    ridges:[0x7c8a98,0x909ca8,0xa4aeb8],fog:45,trees:'darkpine',weather:null,grip:.88,lights:false,stars:0,roadRough:.5,mud:.3,expo:1,sign:'#f2c230',cloud:1,cloudCol:0xb8c2cc,sideP:{drop:.2,wall:.2,forest:.6}},
+  toscane:{label:'Toscane',fogHex:0xf0e6cc,skyTop:0x5a9ee0,gnd:0xb8a860,sunCol:[1,.9,.7],sunHex:0xffe8c0,sunI:1.7,hemiS:0xfff4dc,hemiG:0xa89850,hemiI:.9,envI:.55,
+    asphalt:0x66625c,line:0xf2ead8,grass:0xb4b862,rockA:0xd8c8a8,rockB:0xbcab88,slopeHi:0xa8b45a,slopeLo:0x859848,floor:0x8a9440,bush:0x6a8a44,
+    ridges:[0xa8a8b8,0xbcbccc,0xd0d0de],fog:115,trees:'cypress',weather:null,grip:1,lights:false,stars:0,roadRough:.85,mud:.05,expo:1,sign:'#f2c230',cloud:.5,cloudCol:0xffffff,sideP:{drop:.1,wall:.15,forest:.5}}
 };
 THEMES.snow.expoK=.78;THEMES.desert.expoK=.9;THEMES.canyon.expoK=.9;THEMES.storm.expoK=1.1;THEMES.volcano.expoK=1.1;
 const mixH=(a,b,k)=>new THREE.Color(a).lerp(new THREE.Color(b),k).getHex();
@@ -550,8 +593,16 @@ function nightify(t){
   n.sunCol=[.55,.65,1];n.sunHex=0x8fa8ff;n.sunI=.4;n.hemiS=0x34487a;n.hemiI=.75;n.envI=.3;n.lights=true;n.stars=1;n.expoK=1.3;n.fog=Math.round(t.fog*.85);n.cloud=.4;n.grip=t.grip*.97;
   return n;
 }
-for(const k of Object.keys(THEMES))THEMES[k+'_n']=nightify(THEMES[k]);
-const THEME_KEYS=['alps','forest','meadow','snow','desert','canyon','storm','volcano'];
+function duskify(t){
+  const n=Object.assign({},t),warm=0xff9a5a;n.label=t.label+' (schemer)';
+  for(const k of ['fogHex','gnd','asphalt','grass','rockA','rockB','slopeHi','slopeLo','floor','bush','hemiG','cloudCol'])n[k]=mixH(mixH(t[k],0x3a2a40,.3),warm,k==='fogHex'?.45:.12);
+  n.skyTop=0x2a3a78;n.line=mixH(t.line,warm,.25);n.ridges=t.ridges.map(c=>mixH(c,0x5a3a60,.5));
+  n.sunCol=[1,.62,.38];n.sunHex=0xff8a40;n.sunI=1.05;n.hemiS=0xc07a70;n.hemiI=.65;n.envI=.45;n.lights=true;n.stars=0;n.expoK=1.05;n.fog=Math.round(t.fog*.9);n.cloud=Math.max(.5,t.cloud);n.cloudCol=0xe8906a;n.sunPos=[.85,.2,.35];
+  return n;
+}
+for(const k of Object.keys(THEMES)){THEMES[k+'_n']=nightify(THEMES[k]);THEMES[k+'_d']=duskify(THEMES[k])}
+const baseKey=k=>String(k).replace(/_[nd]$/,''),lightSuf=k=>(String(k).match(/_[nd]$/)||[''])[0];
+const THEME_KEYS=['alps','forest','meadow','sakura','toscane','savanne','snow','toendra','desert','canyon','storm','mistvallei','jungle','volcano'];
 let TH=THEMES.alps,themeKey='alps',fogMul=1;
 
 /* ---------- renderer, lights, sky ---------- */
@@ -596,17 +647,20 @@ sky.renderOrder=-10;sky.frustumCulled=false;scene.add(sky);
 // far mountain ridges, they follow the camera
 const ridges=new THREE.Group();scene.add(ridges);
 function ridgeRing(Rr,hb,amp,seed,topHex){
-  const seg=140,P=[],C=[],top=new THREE.Color(topHex).convertSRGBToLinear(),bot=lin(TH.fogHex);
+  const seg=360,P=[],C=[],top=new THREE.Color(topHex).convertSRGBToLinear(),bot=lin(TH.fogHex),snow=new THREE.Color(0xf4f7fb).convertSRGBToLinear();
   const pts=[];
   for(let a=0;a<=seg;a++){
     const ang=a/seg*6.2832,q=a%seg;
-    const hh=hb+amp*(Math.pow(vnoise(q*.28,seed),1.4)*1.1+.5*vnoise(q*.8,seed+9)+.25*vnoise(q*2.1,seed+3));
-    pts.push([Math.cos(ang)*Rr,hh,Math.sin(ang)*Rr]);
+    const hh=hb+amp*(Math.pow(vnoise(q*.11,seed),1.5)*1.1+.35*vnoise(q*.33,seed+9)+.12*vnoise(q*.9,seed+3));
+    const sn=clamp((hh-(hb+amp*.62))/(amp*.35),0,1)*(TH.snowCap||0);
+    pts.push([Math.cos(ang)*Rr,hh,Math.sin(ang)*Rr,top.clone().lerp(snow,sn)]);
   }
+  const mid=(c1,c2,t)=>c1.clone().lerp(c2,t);
   for(let a=0;a<seg;a++){
     const p0=pts[a],p1=pts[a+1];
-    const v=[[p0[0],p0[1],p0[2],top],[p1[0],p1[1],p1[2],top],[p0[0],-60,p0[2],bot],[p1[0],-60,p1[2],bot]];
-    for(const o of [0,1,2,1,3,2]){P.push(v[o][0],v[o][1],v[o][2]);C.push(v[o][3].r,v[o][3].g,v[o][3].b)}
+    const y0=p0[1],y1=p1[1],m0=[p0[0],y0*.45,p0[2],mid(p0[3],bot,.55)],m1=[p1[0],y1*.45,p1[2],mid(p1[3],bot,.55)];
+    const t0=[p0[0],p0[1],p0[2],p0[3]],t1=[p1[0],p1[1],p1[2],p1[3]],b0=[p0[0],-60,p0[2],bot],b1=[p1[0],-60,p1[2],bot];
+    for(const v of [[t0,t1,m0,m1],[m0,m1,b0,b1]])for(const o of [0,1,2,1,3,2]){P.push(v[o][0],v[o][1],v[o][2]);C.push(v[o][3].r,v[o][3].g,v[o][3].b)}
   }
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.setAttribute('color',new THREE.Float32BufferAttribute(C,3));
   const m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({vertexColors:true,fog:false,side:THREE.DoubleSide}));
@@ -697,6 +751,7 @@ const matGrass=STD({map:grassT.map,normalMap:grassT.normal,normalScale:new THREE
 const matRock=STD({map:rockT.map,normalMap:rockT.normal,normalScale:new THREE.Vector2(1.1,1.1),vertexColors:true,roughness:1,side:THREE.DoubleSide});
 const matSlope=STD({map:canopyT.map,normalMap:canopyT.normal,normalScale:new THREE.Vector2(1.2,1.2),vertexColors:true,roughness:1,side:THREE.DoubleSide});
 const matMud=STD({vertexColors:true,roughness:.08,metalness:.1,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-3});
+const matRail=STD({vertexColors:true,roughness:.45,metalness:.5,side:THREE.DoubleSide});
 const matFoliage=STD({vertexColors:true,roughness:.9,flatShading:true});
 const matTuft=STD({vertexColors:true,roughness:1,side:THREE.DoubleSide});
 const matFloor=STD({map:canopyT.map,normalMap:canopyT.normal,roughness:1});
@@ -729,6 +784,18 @@ function surfH(row,sgn,d,w,f){
   const a=sideVert(row,sgn,c,w,f)[1],b=sideVert(row,sgn,c+1,w,f)[1];
   return lerp(a,b,clamp((d-OFFS[c])/(OFFS[c+1]-OFFS[c]),0,1))-T.y[row];
 }
+function smoothNormals(g){
+  const p=g.attributes.position.array,n=p.length/3,acc=new Map(),keys=new Array(n);
+  for(let i=0;i<n;i++)keys[i]=Math.round(p[i*3]*40)+','+Math.round(p[i*3+1]*40)+','+Math.round(p[i*3+2]*40);
+  for(let t=0;t<n;t+=3){
+    const ax=p[t*3],ay=p[t*3+1],az=p[t*3+2],ux=p[t*3+3]-ax,uy=p[t*3+4]-ay,uz=p[t*3+5]-az,vx=p[t*3+6]-ax,vy=p[t*3+7]-ay,vz=p[t*3+8]-az;
+    const nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx;
+    for(let k=0;k<3;k++){const key=keys[t+k];let a=acc.get(key);if(!a){a=[0,0,0];acc.set(key,a)}a[0]+=nx;a[1]+=ny;a[2]+=nz}
+  }
+  const N=new Float32Array(p.length);
+  for(let i=0;i<n;i++){const a=acc.get(keys[i]),l=Math.hypot(a[0],a[1],a[2])||1;N[i*3]=a[0]/l;N[i*3+1]=a[1]/l;N[i*3+2]=a[2]/l}
+  g.setAttribute('normal',new THREE.BufferAttribute(N,3));
+}
 class Builder{
   constructor(){this.p=[];this.c=[];this.u=[]}
   quad(a,b,c,d,col,k,uv){
@@ -738,12 +805,12 @@ class Builder{
       if(uv)this.u.push(uv[o*2],uv[o*2+1]);else this.u.push(0,0);
     }
   }
-  mesh(mat,cast){
+  mesh(mat,cast,smooth){
     const g=new THREE.BufferGeometry();
     g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(this.p),3));
     g.setAttribute('color',new THREE.BufferAttribute(new Float32Array(this.c),3));
     g.setAttribute('uv',new THREE.BufferAttribute(new Float32Array(this.u),2));
-    g.computeVertexNormals();
+    if(smooth)smoothNormals(g);else g.computeVertexNormals();
     const m=new THREE.Mesh(g,mat);m.receiveShadow=true;m.castShadow=!!cast;return m;
   }
 }
@@ -795,6 +862,20 @@ function cactusG(c1,c2){
     {g:cyl(.21,.9),m:mR(.6,2.4,0,0,0,Math.PI/2),col:L_(c2)},{g:cyl(.21,1.3),m:mT(1.05,3.05,0),col:L_(c2)},{g:new THREE.SphereGeometry(.21,8,6),m:mT(1.05,3.7,0),col:L_(c2)},
     {g:cyl(.2,.8),m:mR(-.55,1.8,0,0,0,Math.PI/2),col:L_(c2)},{g:cyl(.2,1.1),m:mT(-.95,2.35,0),col:L_(c2)},{g:new THREE.SphereGeometry(.2,8,6),m:mT(-.95,2.9,0),col:L_(c2)}]);
 }
+function palmG(){
+  const P=[{g:new THREE.CylinderGeometry(.12,.2,6.2,7),m:mT(0,3.1,0),col:L_(0x6b5038)}];
+  for(let i=0;i<8;i++){const a=i*Math.PI/4;P.push({g:new THREE.ConeGeometry(.5,3.2,4),m:mR(Math.cos(a)*1.2,6.1,Math.sin(a)*1.2,Math.sin(a)*1.1,0,-Math.cos(a)*1.1),col:L_(i%2?0x2f7a38:0x3a8a40)})}
+  return mergeParts(P);
+}
+function cypG(tall){
+  const t=tall||1;
+  return mergeParts([{g:new THREE.CylinderGeometry(.12,.2,1.6,6),m:mT(0,.8,0),col:L_(0x5a4030)},
+    {g:new THREE.IcosahedronGeometry(1,1),m:mT(0,4.2*t,0,.75,3.6*t,.75),col:L_(0x2f4a2a)},{g:new THREE.IcosahedronGeometry(1,1),m:mT(0,3.2*t,0,.95,2.2*t,.95),col:L_(0x395a32)}]);
+}
+function acaciaG(){
+  return mergeParts([{g:new THREE.CylinderGeometry(.16,.3,5,6),m:mT(0,2.5,0),col:L_(0x6b5a40)},{g:new THREE.CylinderGeometry(.1,.16,2,5),m:mR(.9,5.2,0,0,0,-.7),col:L_(0x6b5a40)},
+    {g:new THREE.IcosahedronGeometry(1,1),m:mT(0,6.2,0,3.2,.7,3.2),col:L_(0x8a9a3a)},{g:new THREE.IcosahedronGeometry(1,1),m:mT(1.8,5.8,.4,1.8,.5,1.8),col:L_(0x9aa844)}]);
+}
 function bushG(hex,hex2){
   return mergeParts([
     {g:new THREE.IcosahedronGeometry(.8,0),m:mT(0,.5,0,1.2,.8,1.2),col:L_(hex)},
@@ -817,6 +898,11 @@ function setupTreeSet(){
   if(k==='conifer'){treeA=pineG([0x2e5a3a,0x37684a,0x417558],0x5a3f2a);treeB=oakG([0x5a8a45,0x679a4c,0x4f7d3e],0x65482f);treeC=birchG([0x9ab552,0xa6c05c,0x8aa648]);treeD=oakG([0x66965a,0x72a460,0x588a4c],0x5a4030)}
   else if(k==='darkpine'){treeA=pineG([0x1a3624,0x20422a,0x274d32],0x2e2217);treeB=oakG([0x213f2a,0x2a4c30,0x1b3624],0x2e2217);treeC=birchG([0x2a4a30,0x30553a,0x25422c]);treeD=pineG([0x16301f,0x1c3a26,0x22442c],0x2e2217,.8)}
   else if(k==='snowpine'){treeA=pineG([0xdde8f0,0xeaf1f7,0xf6f9fc],0x4a3a2c,1.05);treeB=pineG([0xc9d9e6,0xdbe6ef,0xedf3f8],0x4a3a2c,.75);treeC=birchG(null,true);treeD=oakG([0xe6eef5,0xf3f7fb,0xdbe6ef],0x4a3a2c)}
+  else if(k==='sakura'){treeA=oakG([0xf2b8c8,0xf6c8d4,0xe8a0b8],0x4a3a32);treeB=oakG([0xf8d8e2,0xf2c0d0,0xeaa8be],0x4a3a32);treeC=birchG([0xf6d0dc,0xf2b8c8,0xf8dde6]);treeD=oakG([0xe89ab4,0xf0b0c4,0xdc88a6],0x4a3a32)}
+  else if(k==='savanna'){treeA=acaciaG();treeB=acaciaG();treeC=oakG([0xa8a04a,0xb8ae52,0x98943f],0x6b5a40);treeD=acaciaG()}
+  else if(k==='tundra'){treeA=pineG([0x4a6a58,0x547a64,0x5e8470],0x4a3a2c,.8);treeB=pineG([0x43605a,0x4f6f66,0x5b7c72],0x4a3a2c,.6);treeC=birchG([0xb8a860,0xc8b870,0xa89850],true);treeD=pineG([0x4a6a58,0x547a64,0x5e8470],0x4a3a2c,.95)}
+  else if(k==='jungle'){treeA=oakG([0x2f6a30,0x3a7a38,0x286028],0x5a4030);treeB=palmG();treeC=palmG();treeD=oakG([0x387a3a,0x2f6a30,0x44883f],0x5a4030)}
+  else if(k==='cypress'){treeA=cypG(1);treeB=cypG(1.25);treeC=oakG([0x8a9a58,0x7a8a4c,0x6a7a44],0x6b5a40);treeD=cypG(.85)}
   else if(k==='autumn'){treeA=pineG([0x2c5f31,0x33703a,0x3b7f42],0x5a3f2a);treeB=oakG([0xd9822b,0xc85a24,0xe0a030],0x5a3f2a);treeC=birchG([0xe6c13a,0xd9a82e,0xeed05a]);treeD=oakG([0x6f9a3a,0x84a83e,0xc9962c],0x5a3f2a)}
   else{treeA=cactusG(0x4f7d3a,0x5b8c43);treeB=mergeParts([{g:new THREE.IcosahedronGeometry(.9,0),m:mT(0,.45,0,1.4,.6,1.2),col:L_(0xa8895a)},{g:new THREE.IcosahedronGeometry(.6,0),m:mT(.7,.3,.4),col:L_(0xb99a68)},{g:new THREE.IcosahedronGeometry(1.2,0),m:mT(-1.6,.5,-.8,1,.7,1),col:L_(0xb86e48)}]);treeC=treeB.clone();treeD=cactusG(0x5a8a40,0x669a4a)}
   bushGeo=bushG(TH.bush,new THREE.Color(TH.bush).multiplyScalar(.82).getHex());
@@ -872,26 +958,35 @@ function buildWorld(tr){
   const curv=i=>{const a=T.psi[Math.min(N-1,i+3)]-T.psi[Math.max(0,i-3)];return a/(6*DS)};
   for(let c0=0;c0<N-1;c0+=CH){
     const c1=Math.min(N-1,c0+CH),g=new THREE.Group();
-    const road=new Builder(),lines=new Builder(),grass=new Builder(),rock=new Builder(),slope=new Builder();
+    const road=new Builder(),lines=new Builder(),grass=new Builder(),rock=new Builder(),slope=new Builder(),rails=new Builder(),cRail=lin(0xb9bec6),cRailD=lin(0x5d636c);
     const rp=(i,off,h)=>[T.x[i]+T.nx[i]*off,T.y[i]+h,T.z[i]+T.nz[i]*off];
     const bands=[-HALF,-2.2,-1.1,1.1,2.2,HALF];
     for(let i=c0;i<c1;i++){
       const j=i+1,bri=.88+hash(i>>2)*.24;
       for(let b=0;b<5;b++){
-        const wear=(b===1||b===3)?.78:1;
+        const wear=((b===1||b===3)?.78:1)*((b>=1&&b<=3&&hash((i>>4)*3+b)>.88)?.82:1)*((hash((i>>5)+11)>.93)?1.1:1);
         const u0=(bands[b]+HALF)/(2*HALF),u1=(bands[b+1]+HALF)/(2*HALF);
         road.quad(rp(i,bands[b],0),rp(i,bands[b+1],0),rp(j,bands[b],0),rp(j,bands[b+1],0),cAsph,bri*wear,[u0,i*DS/6,u1,i*DS/6,u0,j*DS/6,u1,j*DS/6]);
       }
       lines.quad(rp(i,-3.45,.03),rp(i,-3.25,.03),rp(j,-3.45,.03),rp(j,-3.25,.03),cLine,1);
       lines.quad(rp(i,3.25,.03),rp(i,3.45,.03),rp(j,3.25,.03),rp(j,3.45,.03),cLine,1);
       if((i%8)<4)lines.quad(rp(i,-.09,.03),rp(i,.09,.03),rp(j,-.09,.03),rp(j,.09,.03),cYel,1);
+      {const k=curv(i);
+       if(Math.abs(k)>.016){
+         const sgn=k>0?1:-1,w=sgn>0?T.wR:T.wL;
+         if(w[i]<.4&&w[j]<.4){
+           const L=4.25,a0=rp(i,sgn*L,.46),a1=rp(i,sgn*L,.82),b0=rp(j,sgn*L,.46),b1=rp(j,sgn*L,.82);
+           rails.quad(a0,a1,b0,b1,cRail,1);
+           const c0_=rp(i,sgn*L,.3),c1_=rp(j,sgn*L,.3);rails.quad(c0_,a0,c1_,b0,cRailD,.8);
+         }
+       }}
       for(const sgn of [-1,1]){
         const w=sgn>0?T.wR:T.wL,fa=sgn>0?T.fR:T.fL,wi=w[i],wj=w[j],fi=fa[i],fj=fa[j];
         for(let c=0;c<NC-1;c++){
           const a=sideVert(i,sgn,c,wi,fi),b=sideVert(i,sgn,c+1,wi,fi),cc=sideVert(j,sgn,c,wj,fj),d=sideVert(j,sgn,c+1,wj,fj);
           const nz=vnoise(i*.2+c*3.1+(sgn>0?50:0),c*.7);
           if(c===0){
-            grass.quad(a,b,cc,d,cGrass,.85+nz*.3,[i*DS/3,OFFS[0]/3,i*DS/3,OFFS[1]/3,j*DS/3,OFFS[0]/3,j*DS/3,OFFS[1]/3]);
+            grass.quad(a,b,cc,d,tmp.copy(cGrass).lerp(cRB,.3),.92+nz*.14,[i*DS/3,OFFS[0]/3,i*DS/3,OFFS[1]/3,j*DS/3,OFFS[0]/3,j*DS/3,OFFS[1]/3]);
           }else{
             const ux=b[0]-a[0],uy=b[1]-a[1],uz=b[2]-a[2],vx=cc[0]-a[0],vy=cc[1]-a[1],vz=cc[2]-a[2];
             const nx_=uy*vz-uz*vy,ny_=uz*vx-ux*vz,nz_=ux*vy-uy*vx,len=Math.hypot(nx_,ny_,nz_)||1;
@@ -900,18 +995,19 @@ function buildWorld(tr){
               if(fi<.5&&wi>.5&&nz>.55)tmp.lerp(cGrass2,.22);
               const su=i*DS/7+(sgn>0?.31:0),sv=j*DS/7+(sgn>0?.31:0);
               const ao=a[1]-T.y[i]>-.5?.82+.18*clamp((a[1]-T.y[i])/5,0,1):1;
-              rock.quad(a,b,cc,d,tmp,(.85+nz*.35)*ao,[su,a[1]/7+OFFS[c]*.03,su,b[1]/7+OFFS[c+1]*.03,sv,cc[1]/7+OFFS[c]*.03,sv,d[1]/7+OFFS[c+1]*.03]);
+              rock.quad(a,b,cc,d,tmp,(.92+nz*.16)*ao,[su,a[1]/7+OFFS[c]*.03,su,b[1]/7+OFFS[c+1]*.03,sv,cc[1]/7+OFFS[c]*.03,sv,d[1]/7+OFFS[c+1]*.03]);
             }else{
               const low=clamp((T.y[i]-a[1]-20)/40,0,1);
               tmp.copy(cSH).lerp(cSL,clamp(low+nz*.35,0,1));
               if(fi>.5)tmp.copy(cGrass).lerp(cSH,clamp((OFFS[c]-5)/18,0,1)).multiplyScalar(.9+nz*.2);
-              slope.quad(a,b,cc,d,tmp,.85+nz*.3,[a[0]/7,a[2]/7,b[0]/7,b[2]/7,cc[0]/7,cc[2]/7,d[0]/7,d[2]/7]);
+              slope.quad(a,b,cc,d,tmp,.93+nz*.14,[a[0]/7,a[2]/7,b[0]/7,b[2]/7,cc[0]/7,cc[2]/7,d[0]/7,d[2]/7]);
             }
           }
         }
       }
     }
-    g.add(road.mesh(matRoad),lines.mesh(matLine),grass.mesh(matGrass),rock.mesh(matRock,true),slope.mesh(matSlope,true));
+    g.add(road.mesh(matRoad),lines.mesh(matLine),grass.mesh(matGrass,false,true),rock.mesh(matRock,true,true),slope.mesh(matSlope,true,true));
+    if(rails.p.length)g.add(rails.mesh(matRail));
     {
       const mb=new Builder(),cm=lin(0x3b281a);
       for(const pd of T.puddles){
@@ -1106,6 +1202,7 @@ function buildCarEnv(){
 }
 function applyTheme(key,mul){
   themeKey=THEMES[key]?key:'alps';TH=THEMES[themeKey];fogMul=mul||1;
+  if(TH.sunPos)sunDir.set(TH.sunPos[0],TH.sunPos[1],TH.sunPos[2]).normalize();else sunDir.set(.5,.8,.35).normalize();
   scene.fog.color.copy(lin(TH.fogHex));scene.background=new THREE.Color(TH.fogHex);
   const u=sky.material.uniforms;u.top.value.copy(lin(TH.skyTop));u.hor.value.copy(lin(TH.fogHex));u.gnd.value.copy(lin(TH.fogHex));u.sunCol.value.setRGB(TH.sunCol[0],TH.sunCol[1],TH.sunCol[2]);u.stars.value=TH.stars;u.cloud.value=TH.cloud;u.cloudCol.value.copy(lin(TH.cloudCol));
   hemi.color.copy(lin(TH.hemiS));hemi.groundColor.copy(lin(TH.hemiG));hemi.intensity=TH.hemiI;
@@ -1810,15 +1907,17 @@ const OUTFITS={
   champion:{name:'Kampioen',top:0xf2efe6,pants:0xf2efe6,shoe:0x15161a,glove:0xd4a017,stripe:0xd4a017,helm:0xf2efe6,helmS:0xd4a017,req:'volcano_n',hint:'Rond Vulkaan af in het donker'}
 };
 OUTFITS.owner={name:'Owner',top:0x111114,pants:0x111114,shoe:0xd4a017,glove:0xd4a017,stripe:0xd4a017,helm:0x111114,helmS:0xd4a017,crown:true,req:null,hint:'Alleen voor de eigenaar',owner:true};
+OUTFITS.leader={name:'Online-leider',top:0x0e7f7a,pants:0x10181c,shoe:0xf2f2f2,stripe:0xffffff,helm:0x0e7f7a,helmS:0xffffff,req:null,hint:'Alleen voor de online-leider',staff:'leader'};
 OUTFITS.mod={name:'Moderator',top:0x1a2a50,pants:0x14161c,shoe:0xf2f2f2,stripe:0xc8d0dc,helm:0x1a2a50,helmS:0xc8d0dc,req:null,hint:'Alleen voor de moderator',staff:'mod'};
 const OUTFIT_KEYS=Object.keys(OUTFITS);
 const isOwner=()=>{try{const n=acctName();return !!n&&((window.LLL_CONFIG&&window.LLL_CONFIG.owners)||[]).some(o=>String(o).toLowerCase()===n.toLowerCase())}catch(e){return false}};
+const isLeader=()=>{try{const n=acctName();return !!n&&((window.LLL_CONFIG&&window.LLL_CONFIG.leaders)||[]).some(o=>String(o).toLowerCase()===n.toLowerCase())}catch(e){return false}};
 const isMod=()=>{try{const n=acctName();return !!n&&((window.LLL_CONFIG&&window.LLL_CONFIG.mods)||[]).some(o=>String(o).toLowerCase()===n.toLowerCase())}catch(e){return false}};
-const variantKey=()=>isOwner()?'owner':isMod()?'mod':null;
+const variantKey=()=>isOwner()?'owner':isMod()?'mod':isLeader()?'leader':null;
 const ownerOk=k=>!OUTFITS[k].owner||isOwner();
 const PAINT0={},PAINT={on:false};
-const PAINTS={owner:{red:[0xc9a227,.55,.3],trim:[0xd4a017,.6,.3]},mod:{red:[0x1c3f8f,.45,.3],trim:[0xc8d0dc,.6,.3]}};
-const VDEF={owner:{label:'Owner GT',topV:62,acc:30,grip:13,steer:.6,dragK:.0007,fly:true},mod:{label:'Moderator GT',topV:60,acc:28,grip:12.5,steer:.6,dragK:.0007,fly:true}};
+const PAINTS={leader:{red:[0x0e8f8a,.4,.3],trim:[0xe8eef0,.5,.3]},owner:{red:[0xc9a227,.55,.3],trim:[0xd4a017,.6,.3]},mod:{red:[0x1c3f8f,.45,.3],trim:[0xc8d0dc,.6,.3]}};
+const VDEF={leader:{label:'Online-leider GT',topV:56,acc:26,grip:12,steer:.58,dragK:.0008,fly:false},owner:{label:'Owner GT',topV:62,acc:30,grip:13,steer:.6,dragK:.0007,fly:true},mod:{label:'Moderator GT',topV:60,acc:28,grip:12.5,steer:.6,dragK:.0007,fly:true}};
 const VARIANT={on:false,key:null,active:false};
 const varG=new THREE.Group();car.add(varG);
 function buildVariantExtras(key){
@@ -1826,8 +1925,19 @@ function buildVariantExtras(key){
   PARENT=varG;
   rbox(1.6,.05,.34,.02,M.red,0,1.2,1.98);for(const s of [-1,1]){rbox(.05,.28,.05,.015,M.black,s*.55,1.06,1.9);rbox(.06,.2,.36,.02,M.red,s*.8,1.2,1.98)}
   rbox(.3,.006,1.0,.003,key==='owner'?M.black:M.white,0,.945,-1.55);
+  if(key==='leader'){
+    const c=document.createElement('canvas');c.width=512;c.height=160;const g=c.getContext('2d');
+    g.fillStyle='#ffffff';g.font='900 italic 86px Arial Black,Impact,sans-serif';g.textAlign='center';g.fillText('ONLINE',290,92);
+    g.fillStyle='#10303a';g.font='900 italic 40px Arial Black,Impact,sans-serif';g.fillText('LEIDER',290,140);
+    g.strokeStyle='#ffffff';g.lineWidth=6;g.beginPath();g.arc(66,80,40,0,6.3);g.moveTo(26,80);g.lineTo(106,80);g.moveTo(66,40);g.quadraticCurveTo(30,80,66,120);g.moveTo(66,40);g.quadraticCurveTo(102,80,66,120);g.stroke();
+    const tx=new THREE.CanvasTexture(c);tx.encoding=THREE.sRGBEncoding;
+    const dm=new THREE.MeshBasicMaterial({map:tx,transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-4});
+    for(const s2 of [-1,1]){const d=mkm(new THREE.PlaneGeometry(1.1,.34),dm,s2*.962,.6,.32,varG);d.rotation.y=s2*Math.PI/2}
+    const hd=mkm(new THREE.PlaneGeometry(.9,.28),dm,0,.947,-1.45,varG);hd.rotation.x=-Math.PI/2;hd.rotation.z=Math.PI;
+    rbox(.5,.012,2.0,.004,M.white,0,1.869,.57);
+  }
   if(key==='mod'){rbox(.9,.06,.2,.02,M.black,0,1.9,.25);rbox(.4,.05,.17,.01,new THREE.MeshBasicMaterial({color:lin(0xff2a2a)}),-.22,1.935,.25);rbox(.4,.05,.17,.01,new THREE.MeshBasicMaterial({color:lin(0x2a6aff)}),.22,1.935,.25)}
-  else rbox(.5,.012,2.0,.004,M.black,0,1.869,.57);
+  else if(key==='owner')rbox(.5,.012,2.0,.004,M.black,0,1.869,.57);
   PARENT=car;
 }
 function applyPaint(key){
@@ -1848,7 +1958,7 @@ try{const j=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(j&&Array.isArr
 function saveGame(noSync){try{localStorage.setItem(SAVE_KEY,JSON.stringify(SAVE))}catch(e){}if(!noSync&&typeof syncProfile==='function'){try{syncProfile()}catch(e){}}}
 const ARMS=()=>({D:[armL,armR],P:pArm});
 function applyOutfit(slot,key){
-  if(OUTFITS[key]&&slot===mySlot()&&((OUTFITS[key].owner&&!isOwner())||(OUTFITS[key].staff==='mod'&&!isMod()&&!isOwner())))key='hoodie';
+  if(OUTFITS[key]&&slot===mySlot()&&((OUTFITS[key].owner&&!isOwner())||(OUTFITS[key].staff==='mod'&&!isMod()&&!isOwner())||(OUTFITS[key].staff==='leader'&&!isLeader()&&!isOwner())))key='hoodie';
   const o=OUTFITS[key]||OUTFITS.hoodie,fig=slot==='D'?figD:figP,A=fig.userData.acc;
   const set=(m,hex)=>m.color.copy(lin(hex));
   set(M['helm'+slot],o.helm||0x1a1a1e);set(M['helmS'+slot],o.helmS||0xffffff);set(M['hood'+slot],o.top);set(M['pants'+slot],o.pants);set(M['shoeU'+slot],o.shoe);
@@ -1861,7 +1971,7 @@ function applyOutfit(slot,key){
 const mySlot=()=>role==='driver'?'D':'P';
 function unlockFor(worldKey){
   const got=[];
-  for(const k of OUTFIT_KEYS){const o=OUTFITS[k];if(o.req&&!SAVE.unlocked.includes(k)&&(o.req===worldKey||(o.req.indexOf('_n')<0&&o.req===worldKey.replace('_n','')))){SAVE.unlocked.push(k);got.push(k)}}
+  for(const k of OUTFIT_KEYS){const o=OUTFITS[k];if(o.req&&!SAVE.unlocked.includes(k)&&(o.req===worldKey||(o.req.indexOf('_')<0&&o.req===baseKey(worldKey)))){SAVE.unlocked.push(k);got.push(k)}}
   if(got.length)saveGame();
   return got;
 }
@@ -2426,27 +2536,27 @@ function hasPeer(){
   return true;
 }
 
-let pickedRole='driver',pickedFog=1,pickedQ='hi',pickedWorld='alps',pickedCar='race',pickedNight=false;
-const nk=b=>b+(pickedNight?'_n':'');
+let pickedRole='driver',pickedFog=1,pickedQ='hi',pickedWorld='alps',pickedCar='race',pickedLight=0;
+const nk=b=>b+['','_d','_n'][pickedLight];
 document.querySelectorAll('#roleChips .chip').forEach(ch=>ch.onclick=()=>{
   pickedRole=ch.dataset.r;if(typeof lobbyDirty==='function')lobbyDirty();document.querySelectorAll('#roleChips .chip').forEach(c=>c.classList.toggle('sel',c===ch));
 });
 document.querySelectorAll('#fogChips .chip').forEach(ch=>ch.onclick=()=>{
   pickedFog=+ch.dataset.f;if(typeof lobbyDirty==='function')lobbyDirty();document.querySelectorAll('#fogChips .chip').forEach(c=>c.classList.toggle('sel',c===ch));
 });
-const WORLD_TXT={alps:'Groene bergpas met bomen, mist en veel rotsen.',forest:'Herfstbos met grind, modder en veel bomen.',snow:'Sneeuw en gladde wegen. Je grip is laag.',desert:'Canyons en cactussen. Warm en stoffig.',canyon:'Rode rotsen en stof. Smalle bochten.',meadow:'Open groene weide met zachte heuvels.',storm:'Regen, plassen en weinig grip.',volcano:'Zwarte as en donkere rotsen.',random:'Een verrassing, elke keer anders.'};
+const WORLD_TXT={alps:'Groene bergpas met bomen, mist en veel rotsen.',forest:'Herfstbos met grind, modder en veel bomen.',snow:'Sneeuw en gladde wegen. Je grip is laag.',desert:'Canyons en cactussen. Warm en stoffig.',canyon:'Rode rotsen en stof. Smalle bochten.',meadow:'Open groene weide met zachte heuvels.',storm:'Regen, plassen en weinig grip.',volcano:'Zwarte as en donkere rotsen.',sakura:'Roze bloesembomen en zachte bochten.',toscane:'Cipressen, goudgele velden en warm licht.',savanne:'Open vlakte met acaciabomen.',toendra:'Kaal, koud en winderig.',mistvallei:'Dikke mist tussen donkere dennen.',jungle:'Regenwoud, plassen en weinig zicht.',random:'Een verrassing, elke keer anders.'};
 const CAR_TXT={race:'Snel en wendbaar. Een open cockpit met groot raam.',jeep:'Zwaar en goed in modder. Hoge zit, groot dun stuur.',golf:'Traag, licht en grappig. Open zijkanten met een beugel.'};
 function updatePreview(){
   if(typeof lobbyDirty==='function')lobbyDirty();
   try{refreshBoard()}catch(e){}
-  const w={alps:'de Alpen',forest:'het Bos',snow:'de Sneeuw',desert:'de Woestijn',canyon:'de Canyon',meadow:'de Weide',storm:'de Regen',volcano:'de Vulkaan',random:'een willekeurige wereld'}[pickedWorld],c=CARS[pickedCar].label;
-  $('pvTitle').textContent=c+' in '+w;$('pvText').textContent=CAR_TXT[pickedCar]+' '+WORLD_TXT[pickedWorld];
+  const w=pickedWorld==='random'?'een willekeurige map':'de '+THEMES[pickedWorld].label,c=CARS[pickedCar].label;
+  $('pvTitle').textContent=c+' in '+w;$('pvText').textContent=CAR_TXT[pickedCar]+' '+(WORLD_TXT[pickedWorld]||'');
 }
 document.querySelectorAll('#carChips .chip').forEach(ch=>ch.onclick=()=>{pickedCar=ch.dataset.c;document.querySelectorAll('#carChips .chip').forEach(c=>c.classList.toggle('sel',c===ch));updatePreview()});
 document.querySelectorAll('#worldChips .chip').forEach(ch=>ch.onclick=()=>{
   pickedWorld=ch.dataset.w;if(pickedWorld==='random')lobbyRandom=THEME_KEYS[Math.floor(Math.random()*THEME_KEYS.length)];updatePreview();document.querySelectorAll('#worldChips .chip').forEach(c=>c.classList.toggle('sel',c===ch));
 });
-document.querySelectorAll('#dayChips .chip').forEach(ch=>ch.onclick=()=>{pickedNight=ch.dataset.d==='1';document.querySelectorAll('#dayChips .chip').forEach(c=>c.classList.toggle('sel',c===ch));updatePreview()});
+document.querySelectorAll('#dayChips .chip').forEach(ch=>ch.onclick=()=>{pickedLight=+ch.dataset.d;document.querySelectorAll('#dayChips .chip').forEach(c=>c.classList.toggle('sel',c===ch));updatePreview()});
 document.querySelectorAll('#qChips .chip').forEach(ch=>ch.onclick=()=>{
   pickedQ=ch.dataset.q;try{setQuality(pickedQ)}catch(e){}document.querySelectorAll('#qChips .chip').forEach(c=>c.classList.toggle('sel',c===ch));
 });
@@ -2455,7 +2565,7 @@ updatePreview();
 function drawOutfitChips(){
   const box=$('outfitChips');box.innerHTML='';
   for(const k of OUTFIT_KEYS){
-    const o=OUTFITS[k];if(o.owner&&!isOwner())continue;if(o.staff==='mod'&&!isMod()&&!isOwner())continue;
+    const o=OUTFITS[k];if(o.owner&&!isOwner())continue;if(o.staff==='mod'&&!isMod()&&!isOwner())continue;if(o.staff==='leader'&&!isLeader()&&!isOwner())continue;
     const ok=(o.owner||o.staff)?true:SAVE.unlocked.includes(k),c=document.createElement('div');
     c.className='chip oc'+(SAVE.outfit===k?' sel':'')+(ok?'':' locked');
     const hex=v=>'#'+('000000'+v.toString(16)).slice(-6);
@@ -2470,7 +2580,7 @@ const CFG=window.LLL_CONFIG||{},CLOUD=!!(CFG.url&&CFG.key);
 let AUTH=null,LOCALNAME=null;
 try{AUTH=JSON.parse(localStorage.getItem('lll_auth')||'null');LOCALNAME=localStorage.getItem('lll_local_name')}catch(e){}
 const acctName=()=>CLOUD?(AUTH&&AUTH.name):LOCALNAME;
-const LOCK={owner:'11fb018817c397ab7f87fc784417421db151e7ff6887244889ffa3239d792aaf',moderator:'7931aa2a1bed855457d1ddf6bc06ab4406a9fba0579045a4d6ff78f9c07c440f'};
+const LOCK={owner:'11fb018817c397ab7f87fc784417421db151e7ff6887244889ffa3239d792aaf',leider:'923e0e1b9bebc6c7e4c3af1a57da357723d548c5a9e7efedcb1eb403a88209bd',moderator:'7931aa2a1bed855457d1ddf6bc06ab4406a9fba0579045a4d6ff78f9c07c440f'};
 const goodName=n=>/^[A-Za-z0-9_]{3,16}$/.test(n);
 const mailOf=n=>n.toLowerCase()+'@lll.game';
 function saveAuth(){try{if(AUTH)localStorage.setItem('lll_auth',JSON.stringify(AUTH));else localStorage.removeItem('lll_auth')}catch(e){}}
@@ -2517,8 +2627,8 @@ async function fetchBoard(world){
   return out;
 }
 // every map always has the same route (day and night share it), so times on the leaderboard are comparable
-function routeSeed(key){const b=String(key).replace('_n','');let x=2166136261;for(let i=0;i<b.length;i++){x^=b.charCodeAt(i);x=Math.imul(x,16777619)}return (x>>>0)%1000000000}
-const WNAME=k=>{const b=k.replace('_n','');return (THEMES[b]?THEMES[b].label:b)+(k.endsWith('_n')?' (donker)':'')};
+function routeSeed(key){const b=baseKey(key);let x=2166136261;for(let i=0;i<b.length;i++){x^=b.charCodeAt(i);x=Math.imul(x,16777619)}return (x>>>0)%1000000000}
+const WNAME=k=>{const b=baseKey(k),sf=lightSuf(k);return (THEMES[b]?THEMES[b].label:b)+(sf==='_n'?' (donker)':sf==='_d'?' (schemer)':'')};
 function boardHTML(rows){return rows.length?rows.map((x,i)=>'<li'+(x.username===acctName()?' class="me"':'')+'><i>'+(i+1)+'</i><span>'+String(x.username).replace(/[<>&]/g,'')+'</span><b>'+fmt(x.time)+'</b></li>').join(''):'<li class="empty">Nog geen tijden. Wees de eerste!</li>'}
 let boardTimer=0;
 function refreshBoard(){
@@ -2526,12 +2636,23 @@ function refreshBoard(){
     try{const w=nk(pickedWorld==='random'?'alps':pickedWorld);$('lbTitle').textContent='Ranglijst: '+WNAME(w);$('lb').innerHTML='<li class="empty">Laden...</li>';$('lb').innerHTML=boardHTML(await fetchBoard(w))}catch(e){}
   },150);
 }
-function drawOwner(){const k=variantKey(),ob=$('ownerBox');ob.classList.toggle('hide',!k);const c=$('ownerPaint');c.classList.toggle('sel',VARIANT.on);c.firstChild.textContent=(k==='mod'?'Moderator GT (blauw)':'Owner GT (goud)')+': '+(VARIANT.on?'aan':'uit')+' - 2x spatie = vliegen'}
+function drawOwner(){const k=variantKey(),ob=$('ownerBox');ob.classList.toggle('hide',!k);const c=$('ownerPaint');c.classList.toggle('sel',VARIANT.on);c.firstChild.textContent=(k==='mod'?'Moderator GT (blauw)':k==='leader'?'Online-leider GT (ONLINE livery)':'Owner GT (goud)')+': '+(VARIANT.on?'aan':'uit')+(VDEF[k]&&VDEF[k].fly?' - 2x spatie = vliegen':'')}
+
+/* ---------- lobby tabs ---------- */
+let curTab='play';
+function showTab(t){
+  curTab=t;
+  document.querySelectorAll('#menu [data-tab]').forEach(e=>e.classList.toggle('hide',!e.dataset.tab.split(' ').includes(t)));
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+  if(t==='maps'||t==='play'){try{refreshBoard()}catch(e){}}
+}
+document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{Snd.init();showTab(b.dataset.t)});
+function drawPcard(){const n=(typeof acctName==='function'&&acctName())||'Gast';$('pcName').textContent=n;$('pcSub').textContent=SAVE.unlocked.length+'/'+(OUTFIT_KEYS.filter(k=>!OUTFITS[k].owner&&!OUTFITS[k].staff).length)+' outfits'}
 function drawAcct(){
   const n=acctName(),box=$('acct');
   $('acctOut').classList.toggle('hide',!n);$('acctIn').classList.toggle('hide',!!n);
   $('acctWho').textContent=n?('Ingelogd als '+n+(CLOUD?'':' (alleen op dit apparaat)')):'';
-  if(!variantKey())VARIANT.on=false;drawOutfitChips();drawOwner();
+  if(!variantKey())VARIANT.on=false;drawOutfitChips();drawOwner();drawPcard();
   $('acctNote').textContent=CLOUD?'Je account en tijden staan online.':'Online accounts staan nog niet aan. Je naam en tijden blijven op dit apparaat.';
 }
 async function acctGo(kind){
@@ -2553,6 +2674,7 @@ async function acctGo(kind){
 }
 function acctLogout(){AUTH=null;saveAuth();LOCALNAME=null;try{localStorage.removeItem('lll_local_name')}catch(e){};drawAcct();refreshBoard()}
 $('bLogin').onclick=()=>acctGo('login');$('bSignup').onclick=()=>acctGo('signup');$('bLogout').onclick=acctLogout;
+showTab('play');
 $('ownerPaint').onclick=()=>{VARIANT.on=!VARIANT.on;if(VARIANT.on){pickedCar='race';document.querySelectorAll('#carChips .chip').forEach(c=>c.classList.toggle('sel',c.dataset.c==='race'))}drawOwner();updatePreview()};
 drawAcct();syncProfile();
 refreshBoard();
@@ -2781,7 +2903,7 @@ let dirtAcc=0;
 function updateGlass(dt,spd){
   const rate=wxType==='rain'?45:wxType==='snow'?7:themeKey==='alps'?.5:0;
   dropAcc+=rate*dt;while(dropAcc>=1){addDrop(R()<.3);dropAcc-=1}
-  const dirt=({forest:2.2,alps:1,snow:.6,storm:1.6,meadow:1,canyon:.5,desert:.5,volcano:.8})[themeKey.replace('_n','')]||0;
+  const dirt=({forest:2.2,alps:1,snow:.6,storm:1.6,meadow:1,canyon:.5,desert:.5,volcano:.8,sakura:1,toscane:.7,savanne:.5,toendra:.7,jungle:2,mistvallei:1.2})[baseKey(themeKey)]||0;
   if(spd>10){dirtAcc+=dirt*dt*(spd/30);while(dirtAcc>=1){addMudSpeck();dirtAcc-=1}}
 }
 function updateLEDs(now,ready){
@@ -2909,7 +3031,7 @@ function restartRun(){if(!T||!$('menu').classList.contains('hide'))return;const 
 function doReset(newRoute,swap,newWorld){
   const car=carKey;
   let th=themeKey;
-  if(newWorld){const nt=themeKey.endsWith('_n'),o=THEME_KEYS.filter(k=>k!==themeKey.replace('_n',''));th=o[Math.floor(Math.random()*o.length)]+(nt?'_n':'')}
+  if(newWorld){const sf=lightSuf(themeKey),o=THEME_KEYS.filter(k=>k!==baseKey(themeKey));th=o[Math.floor(Math.random()*o.length)]+sf}
   const seed=routeSeed(th);
   netSend({t:'reset',seed,swap,theme:th,car});
   applyReset(seed,swap,th,car);
