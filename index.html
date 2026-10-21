@@ -1409,14 +1409,14 @@ for(const k of ['race','jeep','golf']){CARS[k].fam=k;CARS[k].shell=k}
 CARS.hatch=Object.assign({},CARS.race,{label:'Stadsracer',shell:'hatch',topV:41,acc:16.5,grip:9.6,steer:.56,rough:1.05,eye:1.22});
 CARS.coupe=Object.assign({},CARS.race,{label:'Sportcoupe',shell:'coupe',topV:51,acc:19,grip:8.8,steer:.46,rough:.95,eye:1.14});
 CARS.pickup=Object.assign({},CARS.jeep,{label:'Pickup',shell:'pickup',topV:39,acc:15.2,grip:8.4,steer:.54,rough:.3,eye:1.42});
-CARS.supercar=Object.assign({},CARS.race,{label:'Owner Supercar',shell:'supercar',topV:68,acc:34,grip:14,steer:.62,rough:.9,eye:1.1,dragK:.0006,fly:true,ownerOnly:true});
+CARS.supercar=Object.assign({},CARS.race,{label:'Owner Supercar',shell:'supercar',topV:68,acc:34,grip:14,steer:.62,rough:.9,eye:1.24,dragK:.0006,fly:true,ownerOnly:true,lowCluster:true});
 CARS.buggy=Object.assign({},CARS.race,{label:'Buggy',shell:'buggy',topV:45,acc:18.5,grip:9.4,steer:.52,rough:.22,eye:1.1,ws:{w:1.3,h:.34,cy:1.16,cz:-.6,rot:.3,pivY:.96,pivZ:-.62,L:.4}});
 const CAR_KEYS=Object.keys(CARS);
 const SHPS={race:{},jeep:{},golf:{},
   hatch:{hood:2.1,roof:.02,wheelF:1.38,bumpZ:2.15},
   coupe:{hood:2.72,roof:-.13,wheelF:1.92,bumpZ:2.77,spoiler:true},
   pickup:{rearW:2.35,tail:3.45,doorUp:.24},
-  supercar:{hood:3.0,roof:-.22,wheelF:2.12,bumpZ:3.07,spoiler:false,bigWing:true,glassRoof:true,crownHood:true},
+  supercar:{hood:3.0,roof:-.22,wheelF:2.12,bumpZ:3.07,spoiler:false,bigWing:true,glassRoof:true,crownHood:true,lowCluster:true},
   buggy:{}};
 SHPS.hatch.mat=M.hatchBody;SHPS.coupe.mat=M.coupeBody;SHPS.pickup.jmat=M.pickupBody;SHPS.buggy.mat=M.buggyBody;SHPS.supercar.mat=M.superBody;SHPS.supercar.tmat=M.superTrim;
 
@@ -1647,9 +1647,12 @@ function shellRace(){
   }
   rbox(1.5,.03,.2,.01,M.black,0,.925,-.9);
   mkm(profileGeo([[.2,.6],[.2,.8],[.27,.9],[.48,.935],[.78,.93],[.92,.9],[.92,.62]],1.66,.015),M.dash,0,0,0);
+  if(SHP.lowCluster){rbox(.36,.15,.03,.01,M.black,-.42,.95,-.43).rotation.x=-.5}
+  else{
   rbox(.49,.25,.03,.014,M.black,-.42,.99,-.4).rotation.x=-.45;
   rbox(.5,.022,.1,.01,M.black,-.42,1.125,-.36).rotation.x=.25;
   rbox(.03,.18,.2,.012,M.black,-.665,1.03,-.38);rbox(.03,.18,.2,.012,M.black,-.175,1.03,-.38);
+  }
   for(const x of [-.78,.28,.78]){rbox(.1,.055,.03,.012,M.black,x,.865,-.205);for(let k=-1;k<=1;k++){const sl=bxm(.085,.006,.014,M.dash2,x,.865+k*.014,-.19);sl.rotation.x=.35}}
   rbox(.5,.2,.02,.01,M.dash2,.42,.7,-.212);rbox(.12,.02,.015,.007,M.chrome,.42,.77,-.2);
   for(const s of [-1,1]){
@@ -1800,6 +1803,7 @@ function setCar(kind){
   if(fam2==='race'){clMesh.position.set(-.42,.992,-.382);clMesh.rotation.x=-.45;clMesh.scale.set(1,1,1);fresh.position.set(.12,1.58,-.49)}
   else if(fam2==='jeep'){clMesh.position.set(-.42,1.12,-.292);clMesh.rotation.x=-.12;clMesh.scale.set(1.18,1.18,1);fresh.position.set(.12,1.6,-.76)}
   else{clMesh.position.set(-.42,.97,-.38);clMesh.rotation.x=-.5;clMesh.scale.set(.5,.5,1);fresh.position.set(.12,1.78,-.55)}
+  if(CARS[kind].lowCluster){clMesh.position.set(-.42,.955,-.4);clMesh.rotation.x=-.52;clMesh.scale.set(.62,.62,1)}
   setWS(CAR.ws);
   placePassengerArms();placePassengerLegs();shL.y=.99+SEAT_DY;shR.y=.99+SEAT_DY;
   figD.position.y=SEAT_DY;figP.position.y=SEAT_DY;tab.position.set(HOLD.x,HOLD.y+SEAT_DY,HOLD.z);tab.rotation.set(-1.0,0,0);
@@ -2169,6 +2173,7 @@ addEventListener('keydown',e=>{
   keys[e.code]=true;
   if(e.code==='Space'&&!e.repeat&&T&&$('menu').classList.contains('hide')){const nw=performance.now();if(nw-lastSpace<330){toggleFly();lastSpace=0}else lastSpace=nw}
   if(RP.on&&(e.code==='Enter'||e.code==='Escape'))endReplay();
+  if(e.code==='KeyC'&&!e.repeat&&WALK.on){WALK.view3=!WALK.view3;showMsg(WALK.view3?'Derde persoon (C = terug)':'Eerste persoon (C = derde persoon)',1200)}
   if(e.code==='KeyF'&&!e.repeat&&FREE&&T&&$('menu').classList.contains('hide')){if(WALK.on)walkExit();else walkEnter()}
   if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();
   if(e.code==='KeyT')toggleIpad();
@@ -2848,25 +2853,25 @@ function owUpsert(id,st){
   let m=OW.meshes[id];
   if(!m||m.userData.car!==st.car){if(m){scene.remove(m)}m=OW.meshes[id]=makeRemoteCar(st.car,id,st.name||'Speler');m.userData.car=st.car}
   const u=m.userData;u.tx=st.x;u.ty=st.y;u.tz=st.z;u.ta=st.a;u.tp=st.p||0;u.tr=st.r||0;u.seen=performance.now();
-  u.wk=!!st.wk;u.wtx=st.wtx||0;u.wtz=st.wtz||0;
+  u.v=st.v||0;u.fl=!!st.fl;u.wk=!!st.wk;u.wtx=st.wtx||0;u.wtz=st.wtz||0;
   if(u.wk){if(!u.wm){u.wm=makeRemoteWalker(id,st.name||'Speler');u.wmx=st.wx;u.wmy=st.wy;u.wmz=st.wz}u.twx=st.wx;u.twy=st.wy;u.twz=st.wz;u.twa=st.wa||0}
   else if(u.wm){scene.remove(u.wm);u.wm=null}
   if(u.first){u.x=st.x;u.y=st.y;u.z=st.z;u.a=st.a;u.p=u.tp;u.r=u.tr;u.first=false}
 }
 function owRemove(id){const m=OW.meshes[id];if(m){if(m.userData.wm)scene.remove(m.userData.wm);scene.remove(m);delete OW.meshes[id]}delete OW.players[id]}
 function owSendState(){
-  const st={n:OW.name,x:+S.x.toFixed(2),y:+S.y.toFixed(2),z:+S.z.toFixed(2),a:+S.psi.toFixed(3),p:+S.pitch.toFixed(3),r:+S.roll.toFixed(3),car:carKey,wk:WALK.on?1:0,wx:+WALK.x.toFixed(2),wy:+WALK.y.toFixed(2),wz:+WALK.z.toFixed(2),wa:+WALK.yaw.toFixed(2),wtx:+WALK.tx.toFixed(2),wtz:+WALK.tz.toFixed(2)};
+  const st={n:OW.name,x:+S.x.toFixed(2),y:+S.y.toFixed(2),z:+S.z.toFixed(2),a:+S.psi.toFixed(3),p:+S.pitch.toFixed(3),r:+S.roll.toFixed(3),car:carKey,v:+S.sp.toFixed(1),fl:S.fly?1:0,wk:WALK.on?1:0,wx:+WALK.x.toFixed(2),wy:+WALK.y.toFixed(2),wz:+WALK.z.toFixed(2),wa:+WALK.yaw.toFixed(2),wtx:+WALK.tx.toFixed(2),wtz:+WALK.tz.toFixed(2)};
   if(OW.host){OW.players.host=Object.assign({t:performance.now()},st)}
   else if(OW.conn&&OW.conn.open){try{OW.conn.send({t:'ow_s',s:st})}catch(e){}}
 }
 function owBroadcast(){
   const ps=[];
-  for(const id in OW.players){const q=OW.players[id];ps.push([id,q.n,q.x,q.y,q.z,q.a,q.p,q.r,q.car,q.wk||0,q.wx||0,q.wy||0,q.wz||0,q.wa||0,q.wtx||0,q.wtz||0])}
+  for(const id in OW.players){const q=OW.players[id];ps.push([id,q.n,q.x,q.y,q.z,q.a,q.p,q.r,q.car,q.wk||0,q.wx||0,q.wy||0,q.wz||0,q.wa||0,q.wtx||0,q.wtz||0,q.v||0,q.fl||0])}
   for(const id in OW.conns){const c=OW.conns[id];if(c.open){try{c.send({t:'ow_snap',ps})}catch(e){}}}
 }
 function owApplySnap(ps){
   const seen={};
-  for(const q of ps){const id=q[0];seen[id]=1;if(id===OW.myId)continue;owUpsert(id,{name:q[1],x:q[2],y:q[3],z:q[4],a:q[5],p:q[6],r:q[7],car:q[8],wk:q[9],wx:q[10],wy:q[11],wz:q[12],wa:q[13],wtx:q[14],wtz:q[15]})}
+  for(const q of ps){const id=q[0];seen[id]=1;if(id===OW.myId)continue;owUpsert(id,{name:q[1],x:q[2],y:q[3],z:q[4],a:q[5],p:q[6],r:q[7],car:q[8],wk:q[9],wx:q[10],wy:q[11],wz:q[12],wa:q[13],wtx:q[14],wtz:q[15],v:q[16],fl:q[17]})}
   for(const id in OW.meshes)if(!seen[id])owRemove(id);
 }
 function owUpdate(dt){
@@ -2876,7 +2881,7 @@ function owUpdate(dt){
     if(now-OW.sendT>80){OW.sendT=now;owSendState()}
     if(OW.host&&now-OW.snapT>100){OW.snapT=now;
       // host mirrors its own meshes from guests' states
-      for(const id in OW.players){if(id==='host')continue;const q=OW.players[id];if(now-q.t>4000){owRemove(id);continue}owUpsert(id,{name:q.n,x:q.x,y:q.y,z:q.z,a:q.a,p:q.p,r:q.r,car:q.car,wk:q.wk,wx:q.wx,wy:q.wy,wz:q.wz,wa:q.wa,wtx:q.wtx,wtz:q.wtz})}
+      for(const id in OW.players){if(id==='host')continue;const q=OW.players[id];if(now-q.t>4000){owRemove(id);continue}owUpsert(id,{name:q.n,x:q.x,y:q.y,z:q.z,a:q.a,p:q.p,r:q.r,car:q.car,wk:q.wk,wx:q.wx,wy:q.wy,wz:q.wz,wa:q.wa,wtx:q.wtx,wtz:q.wtz,v:q.v,fl:q.fl})}
       owBroadcast()}
   }
   const k=1-Math.exp(-10*dt);
@@ -2901,7 +2906,7 @@ function owEnter(theme,fog,withNet){
 }
 
 /* ---------- on foot (open world): get out of the car, walk around, get run over ---------- */
-const WALK={on:false,x:0,y:0,z:0,yaw:0,pitch:0,vy:0,idx:0,tumble:false,tt:0,vel:new THREE.Vector3(),tx:0,tz:0,rvx:0,rvz:0,bob:0,fallT:0};
+const WALK={view3:false,mesh:null,on:false,x:0,y:0,z:0,yaw:0,pitch:0,vy:0,idx:0,tumble:false,tt:0,vel:new THREE.Vector3(),tx:0,tz:0,rvx:0,rvz:0,bob:0,fallT:0};
 function walkGround(x,z){const pr=probe(x,z,WALK.idx,12,60);WALK.idx=pr.i;return pr.ad<HALF?groundAt(x,z,pr.i):T.y[pr.i]+surfH(pr.i,pr.sgn,pr.ad,pr.w,pr.f)}
 function carBlocks(nx,nz){
   const dx=nx-S.x,dz=nz-S.z,r=dx*Math.cos(S.psi)+dz*-Math.sin(S.psi),f=dx*-Math.sin(S.psi)+dz*-Math.cos(S.psi);
@@ -2916,9 +2921,10 @@ function walkEnter(){
   if(S.sp>5){showMsg('Sta eerst stil om uit te stappen.',1500,true);return}
   walkSpawn();WALK.yaw=S.psi;WALK.pitch=0;WALK.tumble=false;S.vx=S.vz=0;S.sp=0;WALK.on=true;
   scene.add(camera);document.body.classList.add('walking');
-  $('hint').textContent='Te voet: WASD lopen, Shift rennen, Spatie springen. F bij je auto = instappen. Pas op voor auto\'s!';
+  $('hint').textContent='Te voet: WASD lopen, Shift rennen, Spatie springen, C = andere camera. F bij je auto = instappen. Pas op voor auto\'s!';
 }
 function walkLeave(){
+  if(WALK.mesh)WALK.mesh.visible=false;
   WALK.on=false;WALK.tumble=false;document.body.classList.remove('walking');
   car.add(camera);camera.rotation.set(0,0,0);camera.position.set(-.42,CAR.eye,.45);camera.fov=75;camera.updateProjectionMatrix();lookYaw=0;lookPitch=0;
   if(FREE)$('hint').textContent='Open wereld: rij vrij rond, andere spelers zie je met naam. F = uit de auto stappen en lopen. R = terug naar het begin.';
@@ -2952,8 +2958,21 @@ function walkUpdate(dt){
   if(WALK.vy!==0||WALK.y>g+.03){WALK.vy-=20*dt;WALK.y+=WALK.vy*dt;if(WALK.y<=g){WALK.y=g;WALK.vy=0}}else WALK.y=g;
   if(WALK.y<T.y[WALK.idx]-14){WALK.fallT+=dt;if(WALK.fallT>1.2){WALK.fallT=0;walkSpawn();showMsg('Terug naast je auto gezet.',1500)}}else WALK.fallT=0;
 }
+function walkMesh(){
+  if(!WALK.mesh){const g=new THREE.Group(),m=new THREE.Mesh(crowdGeo(3),matFoliage);m.castShadow=true;g.add(m);g.visible=false;scene.add(g);WALK.mesh=g}
+  return WALK.mesh;
+}
 function walkCamera(){
-  if(!WALK.on)return;
+  if(!WALK.on){if(WALK.mesh)WALK.mesh.visible=false;return}
+  if(WALK.view3){
+    const wm=walkMesh();wm.visible=true;wm.position.set(WALK.x,WALK.y,WALK.z);
+    if(WALK.tumble)wm.rotation.set(WALK.tx,WALK.yaw,WALK.tz,'YXZ');else wm.rotation.set(0,WALK.yaw+Math.PI*0,0);
+    const d=3.4,cp=Math.cos(WALK.pitch*.6),elev=clamp(1.7-WALK.pitch*2.4,.5,4.2);
+    camera.position.set(WALK.x+Math.sin(WALK.yaw)*d*cp,WALK.y+elev,WALK.z+Math.cos(WALK.yaw)*d*cp);
+    camera.lookAt(WALK.x,WALK.y+1.4,WALK.z);
+    return;
+  }
+  if(WALK.mesh)WALK.mesh.visible=false;
   if(WALK.tumble){camera.position.set(WALK.x,WALK.y+.6+Math.abs(Math.sin(WALK.tx*.5))*.9,WALK.z);camera.rotation.set(WALK.tx,WALK.yaw+WALK.tz*.3,WALK.tz,'YXZ')}
   else{camera.position.set(WALK.x,WALK.y+1.68+Math.sin(WALK.bob)*.035,WALK.z);camera.rotation.set(WALK.pitch,WALK.yaw,0,'YXZ')}
 }
@@ -2972,6 +2991,27 @@ function makeRemoteWalker(id,name){
   const col=owColor(id),g=new THREE.Group();
   const m=new THREE.Mesh(crowdGeo(Math.abs(id.length*7+id.charCodeAt(id.length-1))%8),matFoliage);m.castShadow=true;g.add(m);
   const lbl=nameSprite(name,col);lbl.position.set(0,2.35,0);g.add(lbl);scene.add(g);return g;
+}
+
+// cars ram each other, but a car that stands (nearly) still is a ghost: nobody can block the road
+function owCarCollide(){
+  if(!FREE||!OW.on||WALK.on||S.ph!==RACE||S.sp<2.5||S.fly)return;
+  const fx=-Math.sin(S.psi),fz=-Math.cos(S.psi),mine=[[S.x+fx*1.3,S.z+fz*1.3],[S.x-fx*1.3,S.z-fz*1.3]];
+  for(const id in OW.meshes){
+    const u=OW.meshes[id].userData;
+    if(u.v<2.5||u.fl||u.wk||Math.abs(u.ty-S.y)>2.6)continue;
+    const rfx=-Math.sin(u.ta),rfz=-Math.cos(u.ta),theirs=[[u.tx+rfx*1.3,u.tz+rfz*1.3],[u.tx-rfx*1.3,u.tz-rfz*1.3]];
+    for(const a of mine)for(const b of theirs){
+      const dx=a[0]-b[0],dz=a[1]-b[1],d=Math.hypot(dx,dz);
+      if(d<1.9&&d>.001){
+        const cx=S.x-u.tx,cz=S.z-u.tz,cl=Math.hypot(cx,cz)||1,nx=cx/cl,nz=cz/cl,over=1.9-d;
+        S.x+=nx*over*.55;S.z+=nz*over*.55;
+        const rvx=rfx*u.v,rvz=rfz*u.v,vrel=(S.vx-rvx)*nx+(S.vz-rvz)*nz;
+        if(vrel<0){const j=-vrel*.85;S.vx+=nx*j;S.vz+=nz*j;S.yawRate+=(R()-.5)*1.2*Math.min(1,-vrel/10);if(OW.bumpT===undefined||performance.now()-OW.bumpT>350){OW.bumpT=performance.now();hitSound(-vrel);shake=Math.min(1.6,shake+.5)}}
+        return;
+      }
+    }
+  }
 }
 function owHostSetup(peer,th,label,joinCode,migrated){
   OW.on=true;OW.host=true;OW.myId='host';OW.peer=peer;OW.label=label;OW.code=joinCode||'';OW.conns={};OW.players={};OW.th=th;
@@ -3545,7 +3585,7 @@ function frame(now){
   const drv=role==='driver';
   if(drv){
     if(WALK.on){S.vx=S.vz=0;S.sp=0;S.thr=0}else{let rest=dt;while(rest>0){const h=Math.min(rest,.02);stepSim(h);rest-=h}}
-    walkUpdate(dt);
+    walkUpdate(dt);owCarCollide();
     p={x:S.x,y:S.y,z:S.z,psi:S.psi,pitch:S.pitch,roll:S.roll,steer:S.steer,hb:S.hb,sp:S.sp,thr:S.thr,sl:S.sl,ph:S.ph,rough:S.rough,landed:S.landed,air:S.air,brk:S.brk};
     ph=S.ph;tm=S.t;spd=S.sp;cdv=S.cd;falls=S.falls;cpn=S.cp;fallT=S.fallT;pen=S.pen;landT=S.landed?S.landT:-1;respT=S.respT;
     if(Net.on&&now-lastNet>33){
@@ -3775,6 +3815,7 @@ function buildLobbyDeco(){
   for(let i=0;i<60;i++){const a=rr()*6.283,r=8+rr()*40,x=Math.cos(a)*r,z=Math.sin(a)*r;if(Math.abs(x)<5)continue;const b=new THREE.Mesh(rockGeo,matFoliage);b.position.set(x,.2,z);const sc=.4+rr()*1.3;b.scale.set(sc,sc*.7,sc);b.rotation.y=rr()*6;b.castShadow=true;lobbyG.add(b)}
 }
 function lobbyRefresh(){
+  if(T)return;
   const key=nk(pickedWorld==='random'?lobbyRandom:pickedWorld);
   applyTheme(key,pickedFog);setCar(pickedCar);buildLobbyDeco();applyVariant(VARIANT.on&&pickedCar==='race'&&!!variantKey(),variantKey());applyOutfit(pickedRole==='driver'?'D':'P',SAVE.outfit);applyOutfit(pickedRole==='driver'?'P':'D',pickedRole==='driver'?'casual':'hoodie');
   figD.visible=true;figP.visible=true;
@@ -3811,6 +3852,7 @@ function makeThumbs(){
     const u=snapCanvas(5.2,1.35,5.8,-.5,1.5,-6);const el=document.querySelector('#worldChips .chip[data-w="'+k+'"] .art');if(el){el.style.backgroundImage='url('+u+')';el.style.backgroundSize='cover';el.style.backgroundPosition='center'}});
   let i=0;
   const next=()=>{
+    if(T)return;
     if(i>=jobs.length){try{lobbyRefresh()}catch(e){};return}
     try{jobs[i]()}catch(e){}
     i++;setTimeout(next,40);
@@ -3822,7 +3864,7 @@ onResize();
 lobbyResize();
 try{setQuality('hi');lobbyRefresh();makeThumbs()}catch(e){}
 requestAnimationFrame(frame);
-window.__game={WALK,walkEnter,walkExit,owGotHit,owPublic,owPubTry,roleOf,myRole,badgeSvg,OW,owHost,owUpsert,GH,loadGhost,updateGhost,saveGhostIfBest,setCar,CAR_KEYS,routeSeed,toggleFly,VARIANT,applyVariant,startReplay,endReplay,REC,RP,get CARnow(){return CAR},applyPaint,isOwner,remoteLook,applyOutfit,SAVE,unlockFor,showEnd,OUTFITS,TAB,tab,get stunT(){return stunT},press,get mudLevel(){return mudLevel},addMud,wipeMud,rag,makeTrack,THEMES,buildWorld,applyTheme,stepSim,press,punch,UI,figD,figP,S,D,rem,get T(){return T},get role(){return role},keys,fire:fireEvent,setQuality,get visDmg(){return visDmg},addCrack,car,camera,scene,renderer};
+window.__game={owCarCollide,WALK,walkEnter,walkExit,owGotHit,owPublic,owPubTry,roleOf,myRole,badgeSvg,OW,owHost,owUpsert,GH,loadGhost,updateGhost,saveGhostIfBest,setCar,CAR_KEYS,routeSeed,toggleFly,VARIANT,applyVariant,startReplay,endReplay,REC,RP,get CARnow(){return CAR},applyPaint,isOwner,remoteLook,applyOutfit,SAVE,unlockFor,showEnd,OUTFITS,TAB,tab,get stunT(){return stunT},press,get mudLevel(){return mudLevel},addMud,wipeMud,rag,makeTrack,THEMES,buildWorld,applyTheme,stepSim,press,punch,UI,figD,figP,S,D,rem,get T(){return T},get role(){return role},keys,fire:fireEvent,setQuality,get visDmg(){return visDmg},addCrack,car,camera,scene,renderer};
 })();
 </script>
 </body>
