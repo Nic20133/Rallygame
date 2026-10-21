@@ -349,10 +349,10 @@ body.replaying #hud,body.replaying #ipad,body.replaying #xhair,body.replaying #h
     <div class="stat"><span>Tijd</span><b id="eTime"></b></div>
     <div class="stat"><span>Ravijn-duiken</span><b id="eFall"></b></div>
     <div class="stat"><span>Strafseconden</span><b id="ePen"></b></div>
-    <button class="btn pri" id="bAgain">Zelfde route nog eens</button>
-    <button class="btn alt" id="bNew">Nieuwe route</button>
-    <button class="btn alt" id="bWorld">Andere wereld + nieuwe route</button>
-    <button class="btn alt" id="bSwap">Nieuwe route + rollen wisselen</button>
+    <button class="btn pri" id="bAgain">Nog een keer deze map</button>
+    <button class="btn alt hide" id="bNew">Nieuwe route</button>
+    <button class="btn alt" id="bWorld">Andere map</button>
+    <button class="btn alt" id="bSwap">Rollen wisselen</button>
   </div>
 </div>
 
@@ -2490,6 +2490,8 @@ async function fetchBoard(world){
   for(const x of rows){if(!seen[x.username]){seen[x.username]=1;out.push(x)}if(out.length>=10)break}
   return out;
 }
+// every map always has the same route (day and night share it), so times on the leaderboard are comparable
+function routeSeed(key){const b=String(key).replace('_n','');let x=2166136261;for(let i=0;i<b.length;i++){x^=b.charCodeAt(i);x=Math.imul(x,16777619)}return (x>>>0)%1000000000}
 const WNAME=k=>{const b=k.replace('_n','');return (THEMES[b]?THEMES[b].label:b)+(k.endsWith('_n')?' (donker)':'')};
 function boardHTML(rows){return rows.length?rows.map((x,i)=>'<li'+(x.username===acctName()?' class="me"':'')+'><i>'+(i+1)+'</i><span>'+String(x.username).replace(/[<>&]/g,'')+'</span><b>'+fmt(x.time)+'</b></li>').join(''):'<li class="empty">Nog geen tijden. Wees de eerste!</li>'}
 let boardTimer=0;
@@ -2543,9 +2545,9 @@ function hostRoom(tries){
     if(Net.conn){c.close();return}
     Net.conn=c;
     c.on('open',()=>{
-      const seed=Math.floor(Math.random()*1e9);
       const other=pickedRole==='driver'?'copilot':'driver';
       const th=nk(pickedWorld==='random'?THEME_KEYS[Math.floor(Math.random()*THEME_KEYS.length)]:pickedWorld);
+      const seed=routeSeed(th);
       c.send({t:'hello',seed,role:other,fog:pickedFog,theme:th,car:pickedCar});
       begin(pickedRole,seed,true,pickedFog,th,pickedCar);
     });
@@ -2880,9 +2882,9 @@ let lastRestart=0;
 function restartRun(){if(!T||!$('menu').classList.contains('hide'))return;const n=performance.now();if(n-lastRestart<1500)return;lastRestart=n;doReset(false,false,false);showMsg('Opnieuw! Nieuwe voorruit.',1400)}
 function doReset(newRoute,swap,newWorld){
   const car=carKey;
-  const seed=newRoute?Math.floor(Math.random()*1e9):seedOf;
   let th=themeKey;
   if(newWorld){const nt=themeKey.endsWith('_n'),o=THEME_KEYS.filter(k=>k!==themeKey.replace('_n',''));th=o[Math.floor(Math.random()*o.length)]+(nt?'_n':'')}
+  const seed=routeSeed(th);
   netSend({t:'reset',seed,swap,theme:th,car});
   applyReset(seed,swap,th,car);
 }
@@ -2893,7 +2895,7 @@ $('bWorld').onclick=()=>doReset(true,false,true);
 $('bHost').onclick=()=>hostRoom(0);
 $('bJoin').onclick=joinRoom;
 $('codeIn').addEventListener('keydown',e=>{if(e.key==='Enter')joinRoom()});
-$('bSolo').onclick=()=>{Snd.init();const th=nk(pickedWorld==='random'?THEME_KEYS[Math.floor(Math.random()*THEME_KEYS.length)]:pickedWorld);begin('driver',Math.floor(Math.random()*1e9),false,pickedFog,th,pickedCar)};
+$('bSolo').onclick=()=>{Snd.init();const th=nk(pickedWorld==='random'?THEME_KEYS[Math.floor(Math.random()*THEME_KEYS.length)]:pickedWorld);begin('driver',routeSeed(th),false,pickedFog,th,pickedCar)};
 $('bCancel').onclick=()=>location.reload();
 
 /* ---------- map (the iPad) ---------- */
@@ -3215,7 +3217,7 @@ onResize();
 lobbyResize();
 try{setQuality('hi');lobbyRefresh();makeThumbs()}catch(e){}
 requestAnimationFrame(frame);
-window.__game={toggleFly,VARIANT,applyVariant,startReplay,endReplay,REC,RP,get CARnow(){return CAR},applyPaint,isOwner,remoteLook,applyOutfit,SAVE,unlockFor,showEnd,OUTFITS,TAB,tab,get stunT(){return stunT},press,get mudLevel(){return mudLevel},addMud,wipeMud,rag,makeTrack,THEMES,buildWorld,applyTheme,stepSim,press,punch,UI,figD,figP,S,D,rem,get T(){return T},get role(){return role},keys,fire:fireEvent,setQuality,get visDmg(){return visDmg},addCrack,car,camera,scene,renderer};
+window.__game={routeSeed,toggleFly,VARIANT,applyVariant,startReplay,endReplay,REC,RP,get CARnow(){return CAR},applyPaint,isOwner,remoteLook,applyOutfit,SAVE,unlockFor,showEnd,OUTFITS,TAB,tab,get stunT(){return stunT},press,get mudLevel(){return mudLevel},addMud,wipeMud,rag,makeTrack,THEMES,buildWorld,applyTheme,stepSim,press,punch,UI,figD,figP,S,D,rem,get T(){return T},get role(){return role},keys,fire:fireEvent,setQuality,get visDmg(){return visDmg},addCrack,car,camera,scene,renderer};
 })();
 </script>
 </body>
