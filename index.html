@@ -2748,6 +2748,7 @@ async function submitRun(world,time){
   const name=acctName();if(!name)return false;
   let ok=true;
   try{const a=localRuns();a.push({username:name,world,time:Math.round(time*100)/100});localStorage.setItem('lll_local_runs',JSON.stringify(a.slice(-600)))}catch(e){}
+  if(isOwner())return ok;
   if(CLOUD){try{const r=await cloud('/rest/v1/runs',{method:'POST',body:{user_id:AUTH.uid,username:name,world,time:Math.round(time*100)/100}});ok=r.ok}catch(e){ok=false}}
   return ok;
 }
@@ -2756,6 +2757,7 @@ async function fetchBoard(world){
   if(CLOUD){try{const r=await cloud('/rest/v1/runs?world=eq.'+encodeURIComponent(world)+'&select=username,time&order=time.asc&limit=300',{anon:true});if(r.ok)rows=await r.json();else offline=true}catch(e){offline=true}}
   if(!CLOUD||offline)rows=localRuns().filter(x=>x.world===world).sort((a,b)=>a.time-b.time);
   const seen={},out=[];
+  rows=rows.filter(x=>{const r=roleOf(x.username);return !(r&&r.role==='owner')&&String(x.username).toLowerCase()!=='owner'});
   for(const x of rows){if(!seen[x.username]){seen[x.username]=1;out.push(x)}if(out.length>=10)break}
   out.offline=offline;return out;
 }
