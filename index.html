@@ -1703,6 +1703,7 @@ Object.assign(M,{
   skinD:mk(0xe2b18c,.6),skinP:mk(0xb7805f,.6),hairD:mk(0x2b1e16,.85),hairP:mk(0xc9a35c,.85),
   handD:mk(0xe2b18c,.6),handP:mk(0xb7805f,.6),pantsD:mk(0x2a3b5f,.9),pantsP:mk(0x2a3b5f,.9),shoeUD:mk(0xf2f2f2,.6),shoeUP:mk(0xf2f2f2,.6),
   vestD:mk(0x4a5a3a,.9),vestP:mk(0x4a5a3a,.9),stripeD:mk(0xffffff,.7),stripeP:mk(0xffffff,.7),hatD:mk(0x222222,.85),hatP:mk(0x222222,.85),shadeM:mk(0x0c0c10,.25,.2),
+  helmD:mk(0x1a1a1e,.25,.15),helmP:mk(0x1a1a1e,.25,.15),helmSD:mk(0xffffff,.3),helmSP:mk(0xffffff,.3),lip:mk(0xa85a55,.55),brow:mk(0x2b1e16,.9),iris:new THREE.MeshBasicMaterial({color:0x4a3220}),
   white:mk(0xf2f2f2,.6),sole:mk(0x1d2127,.8),mouth:mk(0x7e3b3b,.7),headset:mk(0x111216,.5,.3),
   eyeW:new THREE.MeshBasicMaterial({color:0xf4f4f4}),eyeK:new THREE.MeshBasicMaterial({color:0x1a1a22})
 });
@@ -1726,65 +1727,90 @@ const mkArm=mat=>{const j=new THREE.Mesh(new THREE.SphereGeometry(.036,14,10),ma
 const gloveL=makeGlove(M.handD,M.hoodD),gloveR=makeGlove(M.handD,M.hoodD);
 const armL=mkArm(M.hoodD),armR=mkArm(M.hoodD);
 const shL=V3(-.655,.99,.7),shR=V3(-.185,.99,.7),_armPole=V3(0,0,0);
+function headGeo(){
+  const g=new THREE.SphereGeometry(1,30,24),p=g.attributes.position;
+  for(let i=0;i<p.count;i++){
+    let x=p.getX(i),y=p.getY(i),z=p.getZ(i);
+    const low=Math.max(0,-y);
+    x*=1-.30*low*low-.05*low;z*=1-.10*low;z-=.07*low*low*(z<0?1:.3);
+    if(y>.2&&z<0)z*=1+.04*(y-.2);
+    p.setXYZ(i,x*.093,y*.12,z*.106);
+  }
+  g.computeVertexNormals();return g;
+}
+const HEAD_GEO=headGeo();
 function makePerson(o){
   const x=o.x,H=o.hood,gp=new THREE.Group();car.add(gp);
   const A={};
-  rbox(.46,.36,.25,.07,H,x,.86,.7,gp,6);rbox(.4,.27,.23,.06,H,x,.64,.7,gp,6);
-  for(const s of [-1,1])mkm(new THREE.SphereGeometry(.082,14,10),H,x+s*.235,.99,.7,gp);
+  // torso: rounded chest, waist and hips, plus shoulders and a seat belt
+  rbox(.46,.36,.25,.1,H,x,.86,.7,gp,8);rbox(.4,.27,.23,.08,H,x,.64,.7,gp,8);
+  for(const s of [-1,1])mkm(new THREE.SphereGeometry(.082,16,12),H,x+s*.235,.99,.7,gp);
   A.hood=new THREE.Group();gp.add(A.hood);
-  const hoodB=mkm(new THREE.SphereGeometry(.105,12,10),H,x,1.04,.8,A.hood);hoodB.scale.set(1.4,.7,.8);
+  const hoodB=mkm(new THREE.SphereGeometry(.105,14,10),H,x,1.03,.79,A.hood);hoodB.scale.set(1.4,.7,.8);
   rbox(.27,.1,.02,.01,H,x,.7,.575,A.hood,3);
   for(const s of [-.04,.04])bxm(.012,.1,.012,M.white,x+s,.98,.575,A.hood);
   A.vest=new THREE.Group();gp.add(A.vest);
-  rbox(.485,.33,.27,.06,o.vest,x,.86,.7,A.vest,5);rbox(.12,.09,.03,.01,o.vest,x-.1,.8,.57,A.vest,3);rbox(.12,.09,.03,.01,o.vest,x+.1,.8,.57,A.vest,3);bxm(.012,.32,.01,M.black,x,.86,.572,A.vest);
+  rbox(.485,.33,.27,.08,o.vest,x,.86,.7,A.vest,6);rbox(.12,.09,.03,.01,o.vest,x-.1,.8,.57,A.vest,3);rbox(.12,.09,.03,.01,o.vest,x+.1,.8,.57,A.vest,3);bxm(.012,.32,.01,M.black,x,.86,.572,A.vest);
   A.stripe=new THREE.Group();gp.add(A.stripe);
   rbox(.475,.045,.265,.015,o.stripe,x,.92,.7,A.stripe,3);for(const s of [-1,1])rbox(.03,.3,.26,.012,o.stripe,x+s*.215,.84,.7,A.stripe,3);
-  A.collar=mkm(new THREE.TorusGeometry(.058,.013,8,18),o.hood,x,1.035,.675,gp);A.collar.rotation.x=Math.PI/2;
-  cyl(.05,.09,o.skin,x,1.06,.67,gp);
+  A.collar=mkm(new THREE.TorusGeometry(.058,.016,8,20),o.hood,x,1.035,.675,gp);A.collar.rotation.x=Math.PI/2;
+  limb(limbBox(.045,M.beltK,gp),V3(x+.17*o.side*-1,1.0,.575),V3(x+.12*o.side,.7,.572));
+  cyl(.048,.1,o.skin,x,1.06,.67,gp);
   const head=new THREE.Group();head.position.set(x,1.08,.66);gp.add(head);
-  const sk=mkm(new THREE.SphereGeometry(.098,18,14),o.skin,0,.125,0,head);sk.scale.set(.95,1.13,1.06);
-  const jaw=mkm(new THREE.SphereGeometry(.072,14,10),o.skin,0,.06,-.02,head);jaw.scale.set(1,.85,1);
+  const fc=new THREE.Group();fc.position.y=.125;head.add(fc);
+  mkm(HEAD_GEO,o.skin,0,0,0,fc);
   for(const s of [-1,1]){
-    mkm(new THREE.SphereGeometry(.024,8,6),o.skin,s*.097,.115,0,head);
-    mkm(new THREE.SphereGeometry(.0165,8,6),M.eyeW,s*.036,.14,-.088,head);
-    mkm(new THREE.SphereGeometry(.0085,8,6),M.eyeK,s*.036,.14,-.1,head);
-    bxm(.046,.008,.01,o.hair,s*.036,.165,-.092,head).rotation.z=-s*.12;
+    const ear=mkm(new THREE.SphereGeometry(.024,10,8),o.skin,s*.092,-.01,.012,fc);ear.scale.set(.5,1.15,.8);
+    const eye=mkm(new THREE.SphereGeometry(.0155,12,10),M.eyeW,s*.037,.02,-.094,fc);eye.scale.set(1,.78,.55);
+    mkm(new THREE.CircleGeometry(.0085,14),M.iris,s*.037,.02,-.1035,fc).rotation.y=Math.PI;
+    mkm(new THREE.CircleGeometry(.0042,10),M.eyeK,s*.037,.02,-.1042,fc).rotation.y=Math.PI;
+    const lid=mkm(new THREE.SphereGeometry(.0165,10,6,0,Math.PI*2,0,Math.PI/2),o.skin,s*.037,.026,-.094,fc);lid.scale.set(1.02,.55,.6);lid.rotation.x=-.5;
+    const brow=rbox(.05,.008,.012,.004,M.brow,s*.037,.049,-.098,fc,2);brow.rotation.z=-s*.12;brow.rotation.x=.1;
   }
-  const nose=mkm(new THREE.ConeGeometry(.017,.04,6),o.skin,0,.108,-.108,head);nose.rotation.x=-Math.PI/2+.4;
-  bxm(.05,.009,.012,M.mouth,0,.05,-.094,head);
-  const cap=mkm(new THREE.SphereGeometry(.104,14,10),o.hair,0,.165,.01,head);cap.scale.set(1,.72,1.06);
-  bxm(.16,.03,.03,o.hair,0,.19,-.085,head);
-  if(o.long){bxm(.15,.16,.045,o.hair,0,.09,.088,head);bxm(.05,.09,.04,o.hair,.06,.1,.06,head)}
-  A.cap=new THREE.Group();head.add(A.cap);
-  {const d=mkm(new THREE.SphereGeometry(.108,16,12),o.hat,0,.17,.01,A.cap);d.scale.set(1,.72,1.06);const br=rbox(.17,.012,.1,.005,o.hat,0,.172,-.105,A.cap,3);br.rotation.x=.12}
-  A.beanie=new THREE.Group();head.add(A.beanie);
-  {const d=mkm(new THREE.SphereGeometry(.112,16,12),o.hat,0,.165,.01,A.beanie);d.scale.set(1,.88,1.06);const r=mkm(new THREE.TorusGeometry(.104,.02,8,20),o.hat,0,.12,.005,A.beanie);r.rotation.x=Math.PI/2;mkm(new THREE.SphereGeometry(.026,10,8),o.hat,0,.268,.01,A.beanie)}
+  const nb=mkm(new THREE.ConeGeometry(.014,.05,8),o.skin,0,-.012,-.108,fc);nb.rotation.x=-Math.PI/2+.55;
+  mkm(new THREE.SphereGeometry(.014,10,8),o.skin,0,-.026,-.116,fc);
+  for(const s of [-1,1])mkm(new THREE.SphereGeometry(.007,8,6),o.skin,s*.012,-.027,-.108,fc);
+  rbox(.04,.007,.012,.003,M.lip,0,-.058,-.097,fc,2);rbox(.044,.01,.013,.004,M.lip,0,-.069,-.097,fc,2);bxm(.036,.0025,.004,M.mouth,0,-.0635,-.1035,fc);
+  // race helmet (open face, no goggles): dome, side skirt, peak, chin strap, intercom boom
+  A.helmet=new THREE.Group();head.add(A.helmet);
+  const hm=o.helm,hs=o.helmS;
+  const dome=mkm(new THREE.SphereGeometry(1,26,18,0,Math.PI*2,0,1.12),hm,0,.15,.006,A.helmet);dome.scale.set(.123,.128,.13);dome.material=hm;
+  const skirt=mkm(new THREE.SphereGeometry(1,26,12,0,Math.PI,1.1,.95),hm,0,.15,.006,A.helmet);skirt.scale.set(.123,.128,.13);skirt.rotation.y=Math.PI/2*0;
+  skirt.geometry=new THREE.SphereGeometry(1,26,12,Math.PI*0,Math.PI,1.1,.95);skirt.rotation.y=0;
+  const peak=rbox(.17,.012,.07,.005,hm,0,.248,-.115,A.helmet,3);peak.rotation.x=.18;
+  rbox(.012,.012,.2,.004,hs,0,.275,.0,A.helmet,2);
+  for(const s of [-1,1]){
+    mkm(new THREE.CylinderGeometry(.034,.034,.026,14),hm,s*.114,.095,.012,A.helmet).rotation.z=Math.PI/2;
+    const st=rbox(.006,.1,.006,.002,M.beltK,s*.085,.03,-.045,A.helmet,2);st.rotation.z=s*.28;
+  }
+  rbox(.05,.006,.012,.003,M.beltK,0,.0,-.1,A.helmet,2);
+  limb(limbCyl(.0045,M.headset,A.helmet),V3(-.116,.09,.012),V3(-.034,.06,-.09));mkm(new THREE.SphereGeometry(.011,8,6),M.headset,-.034,.06,-.09,A.helmet);
+  // (kept so outfits can still toggle them; helmets replace hats and glasses)
+  A.cap=new THREE.Group();head.add(A.cap);A.beanie=new THREE.Group();head.add(A.beanie);A.shades=new THREE.Group();head.add(A.shades);
   A.crown=new THREE.Group();head.add(A.crown);
-  {const gold=mk(0xd4a017,.3,.7);const rg=mkm(new THREE.CylinderGeometry(.088,.098,.05,16,1,true),gold,0,.275,.01,A.crown);rg.material=mk(0xd4a017,.3,.7,{side:THREE.DoubleSide});for(let k=0;k<6;k++){const a=k*Math.PI/3;const c=mkm(new THREE.ConeGeometry(.02,.05,6),gold,Math.sin(a)*.09,.322,.01+Math.cos(a)*.09,A.crown)}mkm(new THREE.SphereGeometry(.012,8,6),mk(0xd0202a,.3),0,.285,-.088,A.crown)}
-  A.shades=new THREE.Group();head.add(A.shades);
-  for(const s of [-1,1])rbox(.05,.03,.012,.006,M.shadeM,s*.036,.14,-.1,A.shades,3);bxm(.02,.006,.01,M.shadeM,0,.145,-.1,A.shades);
-  mkm(new THREE.TorusGeometry(.1,.007,6,16,Math.PI),M.headset,0,.14,0,head);
-  for(const s of [-1,1])cyl(.03,.03,M.headset,s*.105,.12,0,head,0,Math.PI/2,12);
-  limb(limbCyl(.006,M.headset,head),V3(-.105,.1,0),V3(-.03,.055,-.09));mkm(new THREE.SphereGeometry(.012,8,6),M.headset,-.03,.055,-.09,head);
+  {const gold=mk(0xd4a017,.3,.7),ringM=mk(0xd4a017,.3,.7,{side:THREE.DoubleSide});
+   mkm(new THREE.CylinderGeometry(.09,.1,.05,18,1,true),ringM,0,.322,.006,A.crown);
+   for(let k=0;k<7;k++){const a=k*Math.PI*2/7;mkm(new THREE.ConeGeometry(.02,.055,6),gold,Math.sin(a)*.095,.372,.006+Math.cos(a)*.095,A.crown)}
+   mkm(new THREE.SphereGeometry(.013,8,6),mk(0xd0202a,.3),0,.325,-.1,A.crown)}
   const fist=makeGlove(o.hand,H);gp.add(fist);fist.visible=false;
   const arm=taper(.042,.034,H,gp);arm.visible=false;
   gp.userData={head,x,fist,arm,pt:0,recoil:0,side:o.side,acc:A};
   return gp;
 }
-const figD=makePerson({x:-.42,side:1,hood:M.hoodD,skin:M.skinD,hair:M.hairD,long:false,hand:M.handD,vest:M.vestD,stripe:M.stripeD,hat:M.hatD});
-const figP=makePerson({x:.42,side:-1,hood:M.hoodP,skin:M.skinP,hair:M.hairP,long:true,hand:M.handP,vest:M.vestP,stripe:M.stripeP,hat:M.hatP});
+const figD=makePerson({x:-.42,side:1,hood:M.hoodD,skin:M.skinD,hair:M.hairD,long:false,hand:M.handD,vest:M.vestD,stripe:M.stripeD,hat:M.hatD,helm:M.helmD,helmS:M.helmSD});
+const figP=makePerson({x:.42,side:-1,hood:M.hoodP,skin:M.skinP,hair:M.hairP,long:true,hand:M.handP,vest:M.vestP,stripe:M.stripeP,hat:M.hatP,helm:M.helmP,helmS:M.helmSP});
 
 /* ---------- outfits + save ---------- */
 const OUTFITS={
-  hoodie:{name:'Hoodie & sneakers',top:0x3b4252,pants:0x2a3b5f,shoe:0xf2f2f2,hoodie:true,req:null,hint:'Standaard'},
-  casual:{name:'Casual',top:0xd9d2bf,pants:0x8a7a5c,shoe:0x6b4a2e,short:true,collar:true,req:'meadow',hint:'Rond Weide af'},
-  racing:{name:'Racepak',top:0xc01a22,pants:0xc01a22,shoe:0x15161a,glove:0x15161a,stripe:0xffffff,req:'alps',hint:'Rond Alpen af'},
-  street:{name:'Streetwear',top:0xe2652a,pants:0x1a1c20,shoe:0xf2f2f2,cap:true,hat:0xf2f2f2,hoodie:true,req:'desert',hint:'Rond Woestijn af'},
-  adventure:{name:'Avontuur',top:0xd8c8a0,pants:0x6b5a40,shoe:0x5a3e24,vest:0x4a5a3a,beanie:true,hat:0xc8641e,req:'forest',hint:'Rond Bos af'},
-  champion:{name:'Kampioen',top:0xf2efe6,pants:0xf2efe6,shoe:0x15161a,glove:0xd4a017,stripe:0xd4a017,shades:true,req:'volcano_n',hint:'Rond Vulkaan af in het donker'}
+  hoodie:{name:'Hoodie & sneakers',top:0x3b4252,pants:0x2a3b5f,shoe:0xf2f2f2,hoodie:true,helm:0x1c1c20,helmS:0xff6b1a,req:null,hint:'Standaard'},
+  casual:{name:'Casual',top:0xd9d2bf,pants:0x8a7a5c,shoe:0x6b4a2e,short:true,collar:true,helm:0xf2f2f2,helmS:0x3a6fb0,req:'meadow',hint:'Rond Weide af'},
+  racing:{name:'Racepak',top:0xc01a22,pants:0xc01a22,shoe:0x15161a,glove:0x15161a,stripe:0xffffff,helm:0xc01a22,helmS:0xffffff,req:'alps',hint:'Rond Alpen af'},
+  street:{name:'Streetwear',top:0xe2652a,pants:0x1a1c20,shoe:0xf2f2f2,helm:0xe86a1a,helmS:0x111111,hoodie:true,req:'desert',hint:'Rond Woestijn af'},
+  adventure:{name:'Avontuur',top:0xd8c8a0,pants:0x6b5a40,shoe:0x5a3e24,vest:0x4a5a3a,helm:0x8a7a4a,helmS:0xf0e6c8,req:'forest',hint:'Rond Bos af'},
+  champion:{name:'Kampioen',top:0xf2efe6,pants:0xf2efe6,shoe:0x15161a,glove:0xd4a017,stripe:0xd4a017,helm:0xf2efe6,helmS:0xd4a017,req:'volcano_n',hint:'Rond Vulkaan af in het donker'}
 };
-OUTFITS.owner={name:'Owner',top:0x111114,pants:0x111114,shoe:0xd4a017,glove:0xd4a017,stripe:0xd4a017,shades:true,crown:true,req:null,hint:'Alleen voor de eigenaar',owner:true};
-OUTFITS.mod={name:'Moderator',top:0x1a2a50,pants:0x14161c,shoe:0xf2f2f2,stripe:0xc8d0dc,cap:true,hat:0x1a2a50,req:null,hint:'Alleen voor de moderator',staff:'mod'};
+OUTFITS.owner={name:'Owner',top:0x111114,pants:0x111114,shoe:0xd4a017,glove:0xd4a017,stripe:0xd4a017,helm:0x111114,helmS:0xd4a017,crown:true,req:null,hint:'Alleen voor de eigenaar',owner:true};
+OUTFITS.mod={name:'Moderator',top:0x1a2a50,pants:0x14161c,shoe:0xf2f2f2,stripe:0xc8d0dc,helm:0x1a2a50,helmS:0xc8d0dc,req:null,hint:'Alleen voor de moderator',staff:'mod'};
 const OUTFIT_KEYS=Object.keys(OUTFITS);
 const isOwner=()=>{try{const n=acctName();return !!n&&((window.LLL_CONFIG&&window.LLL_CONFIG.owners)||[]).some(o=>String(o).toLowerCase()===n.toLowerCase())}catch(e){return false}};
 const isMod=()=>{try{const n=acctName();return !!n&&((window.LLL_CONFIG&&window.LLL_CONFIG.mods)||[]).some(o=>String(o).toLowerCase()===n.toLowerCase())}catch(e){return false}};
@@ -1825,7 +1851,7 @@ function applyOutfit(slot,key){
   if(OUTFITS[key]&&slot===mySlot()&&((OUTFITS[key].owner&&!isOwner())||(OUTFITS[key].staff==='mod'&&!isMod()&&!isOwner())))key='hoodie';
   const o=OUTFITS[key]||OUTFITS.hoodie,fig=slot==='D'?figD:figP,A=fig.userData.acc;
   const set=(m,hex)=>m.color.copy(lin(hex));
-  set(M['hood'+slot],o.top);set(M['pants'+slot],o.pants);set(M['shoeU'+slot],o.shoe);
+  set(M['helm'+slot],o.helm||0x1a1a1e);set(M['helmS'+slot],o.helmS||0xffffff);set(M['hood'+slot],o.top);set(M['pants'+slot],o.pants);set(M['shoeU'+slot],o.shoe);
   set(M['hand'+slot],o.glove!==undefined?o.glove:(slot==='D'?0xe2b18c:0xb7805f));
   set(M['vest'+slot],o.vest||0x4a5a3a);set(M['stripe'+slot],o.stripe||0xffffff);set(M['hat'+slot],o.hat||0x222222);
   A.hood.visible=!!o.hoodie;A.vest.visible=!!o.vest;A.stripe.visible=!!o.stripe;A.collar.visible=!!o.collar;A.cap.visible=!!o.cap;A.beanie.visible=!!o.beanie;A.shades.visible=!!o.shades;A.crown.visible=!!o.crown;
