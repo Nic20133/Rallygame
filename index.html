@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-<script>/*BUILD:mvjd7or2*/(function(){try{var id="mvjd7or2";if(location.protocol==="file:")return;fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/BUILD:(\w+)\*\//);if(m&&m[1]!==id&&!sessionStorage.getItem("lll_rl_"+m[1])){sessionStorage.setItem("lll_rl_"+m[1],"1");location.replace(location.pathname+"?v="+m[1])}}).catch(function(){})}catch(e){}})();</script>
+<script>/*BUILD:mvjmsaye*/(function(){try{var id="mvjmsaye";if(location.protocol==="file:")return;fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/BUILD:(\w+)\*\//);if(m&&m[1]!==id&&!sessionStorage.getItem("lll_rl_"+m[1])){sessionStorage.setItem("lll_rl_"+m[1],"1");location.replace(location.pathname+"?v="+m[1])}}).catch(function(){})}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Links Links Links</title>
@@ -2194,7 +2194,7 @@ function shellRace(kindId){
   seatsRace();
   for(const sx of [-.42,.42])rbox(.46,.012,.5,.005,M.black,sx,.227,-.05);
   for(const sx of [-.35,.35])rbox(.34,.02,.2,.008,M.liner,sx,(1.74+Y),-.38);
-  rbox(1.6,.9,.04,.01,M.dash,0,.8,1.52);mkm(new THREE.TorusGeometry(.28,.1,12,24),M.black,0,.85,1.47);cyl(.2,.05,M.trim,0,.85,1.47,null,Math.PI/2,0,18);
+  rbox(1.64,.1,.5,.05,M.seatDark,0,.5,1.3);rbox(1.64,.62,.12,.05,M.seatDark,0,.82,1.6).rotation.x=-.12;rbox(1.6,.05,.5,.02,M.carpet,0,.64,1.9);rbox(1.6,.03,.34,.01,M.dash,0,.96,1.82);
   PARENT=car;
 }
 function shellPickup(){
@@ -2386,28 +2386,69 @@ Object.assign(M,{
   white:mk(0xf2f2f2,.6),sole:mk(0x1d2127,.8),mouth:mk(0x7e3b3b,.7),headset:mk(0x111216,.5,.3),
   eyeW:new THREE.MeshBasicMaterial({color:0xf4f4f4}),eyeK:new THREE.MeshBasicMaterial({color:0x1a1a22})
 });
-function makeGlove(hand,cuff){
-  hand=hand||M.skinD;cuff=cuff||M.hoodD;
-  const gr=new THREE.Group(),hands=[];
-  hands.push(rbox(.1,.04,.1,.018,hand,0,0,0,gr,4));
-  const cf=cyl(.05,.07,cuff,0,0,.09,gr,Math.PI/2,0,14);
+/* ---- anatomy helpers: smooth capsules, one merged mesh per hand, muscular lathe arms ---- */
+function capsuleGeo(r1,r2,len){
+  const pts=[],n=7;
+  for(let k=0;k<=n;k++){const a=-Math.PI/2+k/n*Math.PI/2;pts.push(new THREE.Vector2(Math.max(.0001,Math.cos(a)*r1),-len/2-Math.sin(-a)*r1*(-1)*0+Math.sin(a)*r1))}
+  for(let k=0;k<=n;k++){const a=k/n*Math.PI/2;pts.push(new THREE.Vector2(Math.max(.0001,Math.cos(a)*r2),len/2+Math.sin(a)*r2))}
+  return new THREE.LatheGeometry(pts,14);
+}
+function bakePart(list,geo,m4){
+  const ng=(geo.index?geo.toNonIndexed():geo.clone());ng.applyMatrix4(m4);list.push(ng);
+}
+function mergeSmooth(list){
+  let n=0;for(const g of list)n+=g.attributes.position.count;
+  const P=new Float32Array(n*3),N=new Float32Array(n*3);let o=0;
+  for(const g of list){P.set(g.attributes.position.array,o*3);N.set(g.attributes.normal.array,o*3);o+=g.attributes.position.count}
+  const out=new THREE.BufferGeometry();out.setAttribute('position',new THREE.BufferAttribute(P,3));out.setAttribute('normal',new THREE.BufferAttribute(N,3));return out;
+}
+const _cy=new THREE.Vector3(0,1,0);
+function segMat(a,b){const d=new THREE.Vector3().subVectors(b,a),q=new THREE.Quaternion().setFromUnitVectors(_cy,d.clone().normalize());return{m:new THREE.Matrix4().compose(new THREE.Vector3().addVectors(a,b).multiplyScalar(.5),q,new THREE.Vector3(1,1,1)),len:d.length()}}
+function handGeo(side){
+  const L=[],s=side||1;
+  const el=(x,y,z,rx,ry,rz)=>{const g=new THREE.SphereGeometry(1,18,14);bakePart(L,g,new THREE.Matrix4().compose(new THREE.Vector3(x,y,z),new THREE.Quaternion(),new THREE.Vector3(rx,ry,rz)))};
+  el(0,0,.002,.052,.021,.056);        // palm
+  el(0,-.002,.05,.044,.022,.042);     // heel of the hand
+  el(s*.034,.003,-.02,.022,.017,.034);// base of index + thumb pad
+  const fx=[.036,.012,-.012,-.034],pr=[.0128,.0132,.0124,.0108],plen=[.046,.05,.046,.038],mlen=[.03,.033,.03,.025],dlen=[.024,.026,.024,.02];
   for(let f=0;f<4;f++){
-    const x=(f-1.5)*.025,len=f===0||f===3?.05:.06;
-    hands.push(mkm(new THREE.SphereGeometry(.0165,10,8),hand,x,.0,-.05,gr));
-    hands.push(cyl(.0125,len,hand,x,.0,-.05-len/2,gr,Math.PI/2,0,10));
-    hands.push(mkm(new THREE.SphereGeometry(.0135,10,8),hand,x,.0,-.05-len,gr));
-    hands.push(cyl(.0115,.036,hand,x,-.019,-.05-len-.006,gr,Math.PI/2+.95,0,10));
-    hands.push(mkm(new THREE.SphereGeometry(.0115,10,8),hand,x,-.036,-.05-len+.014,gr));
+    const x=s*fx[f];
+    const k0=new THREE.Vector3(x,.0,-.048);
+    const k1=new THREE.Vector3(x,-.012,-.048-plen[f]);                      // after proximal phalanx
+    const k2=new THREE.Vector3(x,-.04,-.048-plen[f]-mlen[f]*.45);           // middle curls down
+    const k3=new THREE.Vector3(x,-.064,-.048-plen[f]-mlen[f]*.2+0.0);
+    const sg=[[k0,k1,pr[f],pr[f]*.93],[k1,k2,pr[f]*.93,pr[f]*.84],[k2,k3,pr[f]*.84,pr[f]*.74]];
+    for(const [a,b,r1,r2] of sg){const {m,len}=segMat(a,b);bakePart(L,capsuleGeo(r1,r2,Math.max(.002,len-r1-r2)),m)}
   }
-  const th=cyl(.0155,.06,hand,.056,-.006,-.03,gr,Math.PI/2,0,10);th.rotation.set(Math.PI/2,0,-.9);hands.push(th);
-  hands.push(mkm(new THREE.SphereGeometry(.0165,10,8),hand,.082,-.01,-.055,gr));
-  gr.userData={hands,cuff:cf};
+  // thumb: two capsules reaching across the rim
+  const t0=new THREE.Vector3(s*.036,-.004,.012),t1=new THREE.Vector3(s*.058,-.016,-.022),t2=new THREE.Vector3(s*.056,-.03,-.058);
+  for(const [a,b,r1,r2] of [[t0,t1,.0165,.0145],[t1,t2,.0145,.0125]]){const {m,len}=segMat(a,b);bakePart(L,capsuleGeo(r1,r2,Math.max(.002,len-r1-r2)),m)}
+  return mergeSmooth(L);
+}
+function limbGeo(profile,seg){
+  const pts=[],N=seg||18;
+  const keys=profile.map(p=>[p[0],p[1]]);
+  pts.push(new THREE.Vector2(.0001,-.5));
+  for(let i=0;i<=N;i++){const t=i/N;pts.push(new THREE.Vector2(Math.max(.002,spl(keys,t)),t-.5))}
+  pts.push(new THREE.Vector2(.0001,.5));
+  const g=new THREE.LatheGeometry(pts,22);g.rotateX(Math.PI/2);g.computeVertexNormals();return g;
+}
+const UPPER_ARM=[[0,.060],[.12,.078],[.32,.086],[.52,.079],[.76,.062],[.92,.053],[1,.051]];
+const FORE_ARM=[[0,.054],[.1,.063],[.3,.067],[.55,.053],[.8,.041],[1,.034]];
+const FULL_ARM=[[0,.072],[.2,.085],[.42,.072],[.6,.063],[.82,.049],[1,.036]];
+function makeGlove(hand,cuff,side){
+  hand=hand||M.skinD;cuff=cuff||M.skinD;
+  const gr=new THREE.Group();
+  const hm=new THREE.Mesh(handGeo(side===undefined?1:side),hand);hm.castShadow=true;gr.add(hm);
+  const cf=cyl(.04,.07,cuff,0,0,.095,gr,Math.PI/2,0,18);
+  gr.userData={hands:[hm],cuff:cf};
   car.add(gr);return gr;
 }
-const mkArm=mat=>{const sp=(r,sy)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(r,18,14),mat);m.scale.set(1,sy||1,1);car.add(m);return m};
-  return[taper(.064,.054,mat,car),taper(.056,.034,mat,car),sp(.054),sp(.066)]};
+const mkArm=mat=>{const sp=(r)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(r,18,14),mat);car.add(m);return m};
+  const up=new THREE.Mesh(limbGeo(UPPER_ARM),mat),fo=new THREE.Mesh(limbGeo(FORE_ARM),mat);car.add(up,fo);up.castShadow=fo.castShadow=true;
+  return[up,fo,sp(.052),sp(.062)]};
 const armExtras=(arm,sh,el,h)=>{if(arm[3])arm[3].position.copy(sh)};
-const gloveL=makeGlove(M.handD,M.skinD),gloveR=makeGlove(M.handD,M.skinD);
+const gloveL=makeGlove(M.handD,M.skinD,1),gloveR=makeGlove(M.handD,M.skinD,-1);
 const armL=mkArm(M.skinD),armR=mkArm(M.skinD);
 const shL=V3(-.72,.99,.5),shR=V3(-.14,.99,.5),_armPole=V3(0,0,0);
 function headGeo(){
@@ -2592,7 +2633,7 @@ tabX.fillStyle='#1c2233';tabX.fillRect(0,0,256,330);tabT.needsUpdate=true;
 const tabScr=new THREE.Mesh(new THREE.PlaneGeometry(.29,.375),new THREE.MeshBasicMaterial({map:tabT}));tabScr.position.set(0,0,.0135);tab.add(tabScr);
 bxm(.05,.05,.02,M.black,-.1,.15,-.02,tab);
 const pArm=[mkArm(M.skinP),mkArm(M.skinP)];
-const pGloves=[makeGlove(M.handP,M.skinP),makeGlove(M.handP,M.skinP)];
+const pGloves=[makeGlove(M.handP,M.skinP,1),makeGlove(M.handP,M.skinP,-1)];
 function placePassengerArms(){
   const dy=SEAT_DY,hd=TAB.st==='held',tgt=hd?[V3(.25,.7+dy,.35),V3(.59,.7+dy,.35)]:[V3(.27,.62+dy,.4),V3(.57,.62+dy,.4)],sh=[V3(.185,.99+dy,.7),V3(.655,.99+dy,.7)];
   pGloves.forEach((g,i)=>{g.position.copy(tgt[i]);g.rotation.set(.2,i?.4:-.4,0);
@@ -2628,8 +2669,8 @@ function updateLegs(thr,brk){
 
 setCar('race');
 // first-person fist (shown while you hit the other player)
-const fpFist=makeGlove(M.skinD,M.skinD);camera.add(fpFist);fpFist.visible=false;
-const fpArm=taper(.07,.045,M.skinD,camera);camera.add(fpArm);fpArm.visible=false;
+const fpFist=makeGlove(M.skinD,M.skinD,-1);camera.add(fpFist);fpFist.visible=false;
+const fpArm=new THREE.Mesh(limbGeo(FULL_ARM),M.skinD);camera.add(fpArm);camera.add(fpArm);fpArm.visible=false;
 function setFpMats(drv){fpArm.material=drv?M.skinD:M.skinP;fpFist.userData.hands.forEach(m=>{m.material=drv?M.skinD:M.skinP});fpFist.userData.cuff.material=drv?M.skinD:M.skinP}
 const UI={vol:5,winL:false,winR:false,wipers:false,lights:false,hazard:false,radio:false,station:0,doorL:false,doorR:false};
 
@@ -2665,7 +2706,7 @@ addEventListener('keydown',e=>{
   if(e.code==='Space'&&!e.repeat&&T&&$('menu').classList.contains('hide')){const nw=performance.now();if(nw-lastSpace<330){toggleFly();lastSpace=0}else lastSpace=nw}
   if(RP.on&&(e.code==='Enter'||e.code==='Escape'))endReplay();
   if(e.code==='KeyC'&&!e.repeat&&WALK.on){WALK.view3=!WALK.view3;showMsg(WALK.view3?'Derde persoon (C = terug)':'Eerste persoon (C = derde persoon)',1200)}
-  if(e.code==='KeyF'&&!e.repeat&&FREE&&T&&$('menu').classList.contains('hide')){if(WALK.on)walkExit();else walkEnter()}
+  if(e.code==='KeyF'&&!e.repeat&&FREE&&T&&$('menu').classList.contains('hide')){if(WALK.on)walkExit();else if(isOwner())walkEnter();else showMsg('Alleen nic-owner kan uitstappen',1400)}
   if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();
   if(e.code==='KeyT')toggleIpad();
   if(e.code==='KeyG'&&T)setQuality(quality==='hi'?'lo':'hi');
@@ -3418,7 +3459,7 @@ function owUpdate(dt){
 function owEnter(theme,fog,withNet){
   FREE=true;OW.name=acctName()||('Gast'+Math.floor(1000+Math.random()*9000));
   begin('driver',routeSeed('open_'+baseKey(theme)),false,fog,theme,pickedCar);
-  $('owInfo').classList.remove('hide');$('hint').textContent='Open wereld: rij vrij rond, andere spelers zie je met naam. F = uit de auto stappen en lopen. R = terug naar het begin. Aan het einde van de route begin je een nieuwe ronde.';
+  $('owInfo').classList.remove('hide');$('hint').textContent='Open wereld: rij vrij rond, andere spelers zie je met naam. R = terug naar het begin. Aan het einde van de route begin je een nieuwe ronde.';
 }
 
 /* ---------- on foot (open world): get out of the car, walk around, get run over ---------- */
@@ -3443,7 +3484,7 @@ function walkLeave(){
   if(WALK.mesh)WALK.mesh.visible=false;
   WALK.on=false;WALK.tumble=false;document.body.classList.remove('walking');
   car.add(camera);camera.rotation.set(0,0,0);camera.position.set(-.42,CAR.eye,.45);camera.fov=75;camera.updateProjectionMatrix();lookYaw=0;lookPitch=0;
-  if(FREE)$('hint').textContent='Open wereld: rij vrij rond, andere spelers zie je met naam. F = uit de auto stappen en lopen. R = terug naar het begin.';
+  if(FREE)$('hint').textContent='Open wereld: rij vrij rond, andere spelers zie je met naam. R = terug naar het begin.';
 }
 function walkExit(){
   if(!WALK.on||WALK.tumble)return;
