@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-<script>/*BUILD:mvjczmfu*/(function(){try{var id="mvjczmfu";if(location.protocol==="file:")return;fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/BUILD:(\w+)\*\//);if(m&&m[1]!==id&&!sessionStorage.getItem("lll_rl_"+m[1])){sessionStorage.setItem("lll_rl_"+m[1],"1");location.replace(location.pathname+"?v="+m[1])}}).catch(function(){})}catch(e){}})();</script>
+<script>/*BUILD:mvjd7or2*/(function(){try{var id="mvjd7or2";if(location.protocol==="file:")return;fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/BUILD:(\w+)\*\//);if(m&&m[1]!==id&&!sessionStorage.getItem("lll_rl_"+m[1])){sessionStorage.setItem("lll_rl_"+m[1],"1");location.replace(location.pathname+"?v="+m[1])}}).catch(function(){})}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Links Links Links</title>
@@ -1399,11 +1399,7 @@ function profileGeo(pts,width,bevel){
   g.translate(0,0,-dep/2);g.rotateY(Math.PI/2);g.computeVertexNormals();return g;
 }
 M.cageB=mk(0x17181c,.55,.3);
-{const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');x.fillStyle='#26282d';x.fillRect(0,0,128,128);
- x.fillStyle='rgba(120,124,132,.55)';for(let i=0;i<128;i+=32){x.fillRect(i+12,0,6,128);x.fillRect(0,i+12,128,6)}
- x.fillStyle='rgba(190,30,30,.9)';for(let i=0;i<128;i+=64){x.fillRect(i+30,0,3,128);x.fillRect(0,i+30,128,3)}
- const tx=new THREE.CanvasTexture(c);tx.wrapS=tx.wrapT=THREE.RepeatWrapping;tx.repeat.set(2,2);tx.encoding=THREE.sRGBEncoding;
- M.seat.map=tx;M.seat.color.set(0xffffff);M.seat.needsUpdate=true;M.seatDark.map=tx;M.seatDark.color.set(0xb8b8bc);M.seatDark.needsUpdate=true}
+M.seat.color.set(0x3b3d44);M.seatDark.color.set(0x25272c);M.seat.needsUpdate=true;M.seatDark.needsUpdate=true;
 M.glass=mk(0xa9c4d4,.05,.3,{transparent:true,opacity:.15,depthWrite:false,side:THREE.DoubleSide});M.red.roughness=.5;M.red.metalness=.08;M.chrome.metalness=.5;M.chrome.roughness=.4;
 M.superBody=mk(0xeab820,.3,.5,{emissive:lin(0x5a3c00)});M.superTrim=mk(0x15130c,.4,.5);M.glassDark=mk(0x10161e,.1,.3,{transparent:true,opacity:.4,depthWrite:false,side:THREE.DoubleSide});
 M.hatchBody=mk(0x2f6fb8,.5,.1);M.coupeBody=mk(0xe8b81c,.45,.12);M.pickupBody=mk(0xc8571c,.55,.1);M.buggyBody=mk(0x1f8a8a,.5,.1);
@@ -1740,7 +1736,7 @@ function sidePoly(pts,th,bevel,mat,x,p){
 }
 M.glassBody=mk(0x8fb0c4,.05,.3,{transparent:true,opacity:.3,depthWrite:false,side:THREE.DoubleSide});
 /* wheel: lathe tyre + alloy rim + brake, axis along x. returns Group */
-M.alloy=mk(0xc5c8cf,.28,.85);M.steel=mk(0x2c2e33,.5,.6);M.alloyDark=mk(0x3a3d44,.35,.8);M.disc=mk(0x6a6c72,.5,.7);M.caliper=mk(0xd02a2a,.5,.2);M.tire=mk(0x141416,.92);
+M.alloy=mk(0xc5c8cf,.28,.85);M.rocker=mk(0x25262a,.7,.1);M.cabin=mk(0x2a2c31,.9);M.steel=mk(0x2c2e33,.5,.6);M.alloyDark=mk(0x3a3d44,.35,.8);M.disc=mk(0x6a6c72,.5,.7);M.caliper=mk(0xd02a2a,.5,.2);M.tire=mk(0x141416,.92);
 function makeTire(R,wd,rimR,lugs){
   const tw=wd/2,pts=[];
   const prof=[[rimR,-tw*.72],[rimR+(R-rimR)*.28,-tw*.98],[rimR+(R-rimR)*.62,-tw*1.0],[R-.03,-tw*.9],[R-.008,-tw*.62],[R,-tw*.3],[R,tw*.3],[R-.008,tw*.62],[R-.03,tw*.9],[rimR+(R-rimR)*.62,tw*1.0],[rimR+(R-rimR)*.28,tw*.98],[rimR,tw*.72]];
@@ -1815,7 +1811,7 @@ function archDetail(sx,wx,wy,wz,R,mat,w){
   const curve=new THREE.CatmullRomCurve3(Array.from({length:13},(_,i)=>{const a=Math.PI*i/12;return new THREE.Vector3(sx*w,wy+Math.sin(a)*rr*.98,wz-Math.cos(a)*rr)}));
   mkm(new THREE.TubeGeometry(curve,28,.018,8),mat,0,0,0);
   // dark well behind the tyre
-  const wg=new THREE.CylinderGeometry(rr,rr,.34,24,1,true,0,Math.PI*2);wg.rotateZ(Math.PI/2);
+  const wg=new THREE.CylinderGeometry(rr,rr,.34,24,1,true,0,Math.PI);wg.rotateZ(Math.PI/2);
   const wm=mkm(wg,new THREE.MeshStandardMaterial({color:0x0b0b0d,roughness:1,side:THREE.BackSide}),sx*(wx-.06),wy,wz);
 }
 
@@ -1915,11 +1911,12 @@ function buildSaloon(kind){
   };
   bodyMesh(loftBody(frontFn,sp.nose,sp.cowl,{arches,S:56,N:40}),M_,M_,M.black);
   /* ---- sills (black rocker between the wheels) ---- */
-  bodyMesh(loftBody(z=>({w:W-.005,yb:.32,ym:.44,yt:.44,nt:3,nb:4.5,open:true}),sp.cowl,sp.dz,{S:6,N:24,cap0:false,cap1:false}),M_);
+  bodyMesh(loftBody(z=>({w:W-.005,yb:.32,ym:.44,yt:.44,nt:3,nb:4.5,open:true}),sp.cowl,sp.dz,{S:6,N:24,cap0:false,cap1:false}),M.rocker);
   for(const sx of [-1,1]){rbox(.04,.4,sp.dz-sp.cowl,.012,M.dash,sx*(W-.12),.55,(sp.dz+sp.cowl)/2);}
   /* ---- rear quarter (open top, belt height) then the deck ---- */
   const rearOpen=z=>({w:W+.03*Math.exp(-Math.pow((z-sp.wheelR)/.55,2)),yb:.32,ym:belt,yt:belt,nt:3,nb:sp.old?3.2:4.6,open:true,bulge:sp.bulge||0});
   bodyMesh(loftBody(rearOpen,sp.dz,sp.Rr+.06,{arches,S:30,N:40,cap0:false,cap1:false}),M_);
+  bodyMesh(loftBody(z=>{const q=rearOpen(z);return Object.assign({},q,{w:q.w-.02,yb:q.yb+.03,ym:q.ym-.02,yt:q.yt-.02,bulge:(q.bulge||0)})},sp.dz,sp.Rr+.06,{arches,S:30,N:40,cap0:false,cap1:false}),M.cabin);
   const deckFn=z=>{
     const e=sp.tail-z,k=endR(e,sp.old?.34:sp.box?.12:.26),kh=endR(e,sp.old?.4:sp.box?.16:.5);
     const yt=spl([[sp.Rr+.06,sp.deck],[sp.glassB,sp.deck+.01],[sp.tail,sp.deck-.1]],z);
@@ -1930,7 +1927,7 @@ function buildSaloon(kind){
   /* ---- roof ---- */
   const roofFn=z=>{
     const ef=z-sp.A,er=sp.Rr-z,k=Math.min(endR(ef,.34),endR(er,sp.old?.55:.4));
-    return{w:(sp.old?.83:.86)*Math.max(k,.05),yb:1.78+Y,ym:1.82+Y,yt:1.862+Y+ (1-k)*-.03,nt:sp.old?2.2:3,nb:8};
+    return{w:(sp.old?.83:.86)*Math.max(k,.05),yb:1.75+Y,ym:1.81+Y,yt:1.862+Y+ (1-k)*-.03,nt:sp.old?2.2:3,nb:8};
   };
   bodyMesh(loftBody(roofFn,sp.A,sp.Rr,{S:34,N:30}),kind==='supercar'?M.glassDark:M_,kind==='supercar'?M.glassDark:M_,kind==='supercar'?M.glassDark:M_);
   if(kind==='supercar')for(const sx of [-1,0,1])tube([sx*.8,1.86+Y,sp.A+.05],[sx*.8,1.86+Y,sp.Rr-.05],.03,M_);
@@ -2189,7 +2186,7 @@ function shellRace(kindId){
   rbox(.5,.2,.02,.01,M.dash2,.42,.7,-.212);rbox(.12,.02,.015,.007,M.chrome,.42,.77,-.2);
   rbox(1.64,.03,1.42,.012,M.liner,0,(1.79+Y),.3);rbox(.14,.03,.1,.01,new THREE.MeshBasicMaterial({color:lin(0xfff4d0)}),0,(1.765+Y),.3);
   makeDoorSaloon(-1,kindId||'race');makeDoorSaloon(1,kindId||'race');
-  rbox(1.72,.05,3.2,.01,M.carpet,0,.2,-.1);rbox(.3,.22,1.5,.05,M.dash,0,.33,.3);rbox(.26,.012,.7,.005,M.carbon,0,.447,.05);
+  rbox(1.72,.05,3.2,.01,M.carpet,0,.345,-.1);rbox(.3,.22,1.5,.05,M.dash,0,.45,.3);rbox(.26,.012,.7,.005,M.carbon,0,.447,.05);
   cyl(.012,.2,M.chrome,0,.56,-.2,null,0,0,8);mkm(new THREE.SphereGeometry(.03,12,10),M.black,0,.68,-.2);
   for(const cz of [.45,.72]){cyl(.045,.012,M.black,0,.452,cz,null,0,0,18);const rg=mkm(new THREE.TorusGeometry(.047,.006,6,18),M.chrome,0,.455,cz);rg.rotation.x=Math.PI/2}
   cyl(.036,.12,mk(0xf4f4f4,.6),0,.51,.72,null,0,0,16);cyl(.038,.02,mk(0xd02020,.5),0,.575,.72,null,0,0,16);
@@ -2574,7 +2571,7 @@ function applyOutfit(slot,key){
   const o=OUTFITS[key]||OUTFITS.hoodie,fig=slot==='D'?figD:figP,A=fig.userData.acc;
   const set=(m,hex)=>m.color.copy(lin(hex));
   set(M['helm'+slot],o.helm||0x1a1a1e);set(M['helmS'+slot],o.helmS||0xffffff);set(M['hood'+slot],o.top);set(M['pants'+slot],o.pants);set(M['shoeU'+slot],o.shoe);
-  set(M['hand'+slot],o.glove!==undefined?o.glove:(slot==='D'?0xe2b18c:0xb7805f));
+  set(M['hand'+slot],slot==='D'?0xcf9a72:0x9a6646);
   set(M['vest'+slot],o.vest||0x4a5a3a);set(M['stripe'+slot],o.stripe||0xffffff);set(M['hat'+slot],o.hat||0x222222);
   A.hood.visible=!!o.hoodie;A.vest.visible=!!o.vest;A.stripe.visible=!!o.stripe;A.collar.visible=!!o.collar;A.cap.visible=!!o.cap;A.beanie.visible=!!o.beanie;A.shades.visible=!!o.shades;A.crown.visible=!!o.crown;
   fig.userData.outfit=key;
@@ -3866,13 +3863,14 @@ addEventListener('keydown',e=>{
   if(e.code==='KeyH')press('horn');else if(e.code==='KeyL')press('lights');else if(e.code==='KeyV'&&!Net.on)press('wipers');else if(e.code==='ShiftLeft'||e.code==='ShiftRight')press('turbo');else if(e.code==='KeyR'&&!e.repeat)restartRun();
 });
 const _fp=new THREE.Vector3(),_fb=new THREE.Vector3(),_fd=new THREE.Vector3(),_ps=new THREE.Vector3();
+function rightHandShow(v){const gl=role==='driver'?gloveR:pGloves[1],ar=role==='driver'?armR:pArm[1];gl.visible=v;ar.forEach(m=>m.visible=v)}
 function updateFP(dt){
   if(punchCd>0)punchCd-=dt;
   if(punchFP.t>0){
     punchFP.t+=dt;const k=punchFP.t/.3;
-    if(k>=1){punchFP.t=0;fpFist.visible=false;fpArm.visible=false}
+    if(k>=1){punchFP.t=0;fpFist.visible=false;fpArm.visible=false;rightHandShow(true)}
     else{
-      const e=Math.sin(k*Math.PI);
+      rightHandShow(false);const e=Math.sin(k*Math.PI);
       _fp.set(.3,-.35,-.35);_fb.copy(punchFP.hit?punchFP.target:_fd.set(.15,-.1,-.8));if(punchFP.hit)_fb.multiplyScalar(.93);
       _fp.lerp(_fb,e*(punchFP.hit?1:.8));
       fpFist.position.copy(_fp);
