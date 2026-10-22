@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-<script>/*BUILD:mvjc929u*/(function(){try{var id="mvjc929u";if(location.protocol==="file:")return;fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/BUILD:(\w+)\*\//);if(m&&m[1]!==id&&!sessionStorage.getItem("lll_rl_"+m[1])){sessionStorage.setItem("lll_rl_"+m[1],"1");location.replace(location.pathname+"?v="+m[1])}}).catch(function(){})}catch(e){}})();</script>
+<script>/*BUILD:mvjcfi77*/(function(){try{var id="mvjcfi77";if(location.protocol==="file:")return;fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/BUILD:(\w+)\*\//);if(m&&m[1]!==id&&!sessionStorage.getItem("lll_rl_"+m[1])){sessionStorage.setItem("lll_rl_"+m[1],"1");location.replace(location.pathname+"?v="+m[1])}}).catch(function(){})}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Links Links Links</title>
@@ -1607,8 +1607,8 @@ function seatsRace(){
     rbox(.08,.54,.17,.035,M.seatDark,sx-.26,.78,.86);rbox(.08,.54,.17,.035,M.seatDark,sx+.26,.78,.86);
     rbox(.07,.1,.46,.03,M.seatDark,sx-.26,.5,.55);rbox(.07,.1,.46,.03,M.seatDark,sx+.26,.5,.55);
     rbox(.3,.26,.09,.045,M.seatDark,sx,1.23,.99);rbox(.26,.02,.01,.005,M.beltR,sx,1.18,.94);
-    for(const o of [-.15,.15])limb(limbBox(.04,M.beltR),V3(sx+o,1.4,.97),V3(sx+o*.4,.58,.5));
-    limb(limbBox(.04,M.beltR),V3(sx-.26,.5,.7),V3(sx,.52,.35));limb(limbBox(.04,M.beltR),V3(sx+.26,.5,.7),V3(sx,.52,.35));
+    for(const o of [-.15,.15])limb(limbBox(.022,M.beltK),V3(sx+o,1.4,.97),V3(sx+o*.4,.58,.5));
+    limb(limbBox(.022,M.beltK),V3(sx-.26,.5,.7),V3(sx,.52,.35));limb(limbBox(.022,M.beltK),V3(sx+.26,.5,.7),V3(sx,.52,.35));
     cyl(.04,.025,M.chrome,sx,.53,.34,null,Math.PI/2,0,12);
   }
 }
@@ -1618,7 +1618,7 @@ function seatsJeep(){
     rbox(.5,.72,.11,.05,M.seatDark,sx,.95,.95);rbox(.4,.6,.03,.012,M.seat,sx,.95,.89);
     rbox(.34,.2,.08,.04,M.seatDark,sx,1.42,.97);
     cyl(.025,.28,M.chrome,sx-.1,1.2,.99,null,0,0,8);cyl(.025,.28,M.chrome,sx+.1,1.2,.99,null,0,0,8);
-    limb(limbBox(.045,M.beltK),V3(sx+.15,1.5,.97),V3(sx-.15,.62,.5));
+    limb(limbBox(.024,M.beltK),V3(sx+.15,1.5,.97),V3(sx-.15,.62,.5));
   }
 }
 function seatsCart(){
@@ -1926,7 +1926,7 @@ function buildSaloon(kind){
   /* ---- roof ---- */
   const roofFn=z=>{
     const ef=z-sp.A,er=sp.Rr-z,k=Math.min(endR(ef,.34),endR(er,sp.old?.55:.4));
-    return{w:(sp.old?.83:.86)*Math.max(k,.05),yb:1.8+Y,ym:1.83+Y,yt:1.862+Y+ (1-k)*-.03,nt:sp.old?2.5:3,nb:8};
+    return{w:(sp.old?.83:.86)*Math.max(k,.05),yb:1.73+Y,ym:1.8+Y,yt:1.862+Y+ (1-k)*-.03,nt:sp.old?2.2:3,nb:8};
   };
   bodyMesh(loftBody(roofFn,sp.A,sp.Rr,{S:34,N:30}),kind==='supercar'?M.glassDark:M_,kind==='supercar'?M.glassDark:M_,kind==='supercar'?M.glassDark:M_);
   if(kind==='supercar')for(const sx of [-1,0,1])tube([sx*.8,1.86+Y,sp.A+.05],[sx*.8,1.86+Y,sp.Rr-.05],.03,M_);
@@ -1941,7 +1941,7 @@ function buildSaloon(kind){
     // C pillar slab
     sidePoly([[sp.Rr-.14,roofTop-.03],[sp.Rr+.02,roofTop-.03],[sp.glassB+.02,belt+.05],[sp.glassB-.46,belt+.05]],.1,.02,M_,s*.85);
     // quarter window
-    sidePoly([[sp.dz+.08,belt+.02],[sp.dz+.08,roofTop-.08],[sp.Rr-.2,roofTop-.08],[sp.glassB-.5,belt+.02]],.012,0,M.glassBody,s*.85);
+    sidePoly([[sp.dz+.08,belt+.02],[sp.dz+.08,roofTop-.08],[sp.Rr-.2,roofTop-.08],[sp.glassB-.5,belt+.02]],.012,0,mk(0x7a98a8,.1,.2,{transparent:true,opacity:.42,depthWrite:false,side:THREE.DoubleSide}),s*.85);
     // rear fender belt strip / side line
     rbox(.02,.02,2.5,.01,M.black,s*(W-.02),belt+.03,.15);
   }
@@ -1978,7 +1978,7 @@ function buildSaloon(kind){
   /* ---- per-model extras ---- */
   if(kind==='race'){
       // black rubber side strips, mudflap-ish trim, big square tail lights
-    for(const sx of [-1,1]){rbox(.025,.07,3.7,.012,M.black,sx*(W+.045),.62,.0);rbox(.03,.05,.5,.012,M.black,sx*(W+.002),.46,-1.5)}
+    for(const sx of [-1,1]){rbox(.03,.05,.5,.012,M.black,sx*(W+.002),.46,-1.5)}
     for(const sx of [-1,1]){rbox(.36,.2,.05,.02,mk(0xc42020,.35,0,{emissive:lin(0x440808)}),sx*.66,belt-.06,tz+.012);rbox(.14,.1,.05,.02,mk(0xe8a030,.35,0,{emissive:lin(0x553300)}),sx*.5,belt-.2,tz+.012)}
     rbox(1.98,.2,.2,.07,M.black,0,.44,tz-.06);                      // rear bumper
     ell(.03,.5,.03,M.black,.78,1.7+Y,.5).visible=false;
@@ -2397,8 +2397,8 @@ function makeGlove(hand,cuff){
   car.add(gr);return gr;
 }
 const mkArm=mat=>{const sp=(r,sy)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(r,18,14),mat);m.scale.set(1,sy||1,1);car.add(m);return m};
-  return[taper(.082,.068,mat,car),taper(.072,.04,mat,car),sp(.068)]};
-const armExtras=(arm,sh,el,h)=>{if(!arm[3])return;arm[3].position.lerpVectors(sh,el,.4);arm[4].position.copy(sh);arm[5].position.lerpVectors(el,h,.22)};
+  return[taper(.064,.054,mat,car),taper(.056,.034,mat,car),sp(.054),sp(.066)]};
+const armExtras=(arm,sh,el,h)=>{if(arm[3])arm[3].position.copy(sh)};
 const gloveL=makeGlove(M.handD,M.skinD),gloveR=makeGlove(M.handD,M.skinD);
 const armL=mkArm(M.skinD),armR=mkArm(M.skinD);
 const shL=V3(-.72,.99,.5),shR=V3(-.14,.99,.5),_armPole=V3(0,0,0);
