@@ -273,11 +273,11 @@ body.walking #hud .spd,body.walking #tTurbo,body.walking #ipad{display:none!impo
           <div class="step" data-tab="garage"><h3><span>1</span>Auto</h3>
             <div class="chips" id="carChips">
               <div class="chip sel" data-c="race"><div class="art" style="background:#18203a"><svg viewBox="0 0 120 46"><path d="M8 32h104l-6-9-22-3-14-9H46l-14 9-17 3z" fill="#e8283c"/><path d="M47 12h24l12 8H35z" fill="#9fc3e8"/><circle cx="32" cy="33" r="7" fill="#111"/><circle cx="88" cy="33" r="7" fill="#111"/></svg></div><b>Rallyauto</b><small>Snel en wendbaar.</small></div>
-              <div class="chip" data-c="jeep"><div class="art" style="background:#1d2a1b"><svg viewBox="0 0 120 46"><path d="M10 32V16h26l5-7h38l4 7h27v16z" fill="#58763a"/><path d="M43 11h34l3 5H40z" fill="#9fc3e8"/><circle cx="34" cy="33" r="8" fill="#111"/><circle cx="88" cy="33" r="8" fill="#111"/></svg></div><b>Jeep</b><small>Zwaar, goed in modder.</small></div>
               
-              <div class="chip" data-c="hatch"><div class="art" style="background:#1a2a3a"></div><b>Stadsracer</b><small>Compact en wendbaar.</small></div>
-              <div class="chip" data-c="coupe"><div class="art" style="background:#3a2e12"></div><b>Sportcoupe</b><small>Laag en razendsnel.</small></div>
-              <div class="chip" data-c="pickup"><div class="art" style="background:#3a2210"></div><b>Pickup</b><small>Robuust met laadbak.</small></div>
+              
+              
+              
+              
               
               <div class="chip hide" data-c="supercar"><div class="art" style="background:#2a2410"></div><b>Owner Supercar</b><small>Uniek model. Alleen voor de owner.</small></div>
             </div>
@@ -290,21 +290,7 @@ body.walking #hud .spd,body.walking #tTurbo,body.walking #ipad{display:none!impo
 
           <div class="step" data-tab="maps"><h3><span>1</span>Map</h3>
             <div class="chips" id="worldChips">
-              <div class="chip sel w-alps" data-w="alps"><div class="art"></div><b>Alpen</b></div>
-              <div class="chip w-forest" data-w="forest"><div class="art"></div><b>Bos</b></div>
-              <div class="chip w-snow" data-w="snow"><div class="art"></div><b>Sneeuw</b></div>
-              <div class="chip w-desert" data-w="desert"><div class="art"></div><b>Woestijn</b></div>
-              <div class="chip w-meadow" data-w="meadow"><div class="art"></div><b>Weide</b></div>
-              <div class="chip w-canyon" data-w="canyon"><div class="art"></div><b>Canyon</b></div>
-              <div class="chip w-storm" data-w="storm"><div class="art"></div><b>Regen</b></div>
-              <div class="chip w-volcano" data-w="volcano"><div class="art"></div><b>Vulkaan</b></div>
-              <div class="chip w-sakura" data-w="sakura"><div class="art"></div><b>Sakura</b></div>
-              <div class="chip w-toscane" data-w="toscane"><div class="art"></div><b>Toscane</b></div>
-              <div class="chip w-savanne" data-w="savanne"><div class="art"></div><b>Savanne</b></div>
-              <div class="chip w-toendra" data-w="toendra"><div class="art"></div><b>Toendra</b></div>
-              <div class="chip w-mistvallei" data-w="mistvallei"><div class="art"></div><b>Mistvallei</b></div>
-              <div class="chip w-jungle" data-w="jungle"><div class="art"></div><b>Jungle</b></div>
-              <div class="chip w-random" data-w="random"><div class="art"></div><b>Random</b></div>
+              <div class="chip sel w-forest" data-w="forest"><div class="art"></div><b>Bos</b></div>
             </div>
           </div>
 
@@ -3125,7 +3111,7 @@ function hasPeer(){
   return true;
 }
 
-let pickedRole='driver',pickedFog=1,pickedQ='hi',pickedWorld='alps',pickedCar='race',pickedLight=0;
+let pickedRole='driver',pickedFog=1,pickedQ='hi',pickedWorld='forest',pickedCar='race',pickedLight=0;
 const nk=b=>b+['','_d','_n'][pickedLight];
 document.querySelectorAll('#roleChips .chip').forEach(ch=>ch.onclick=()=>{
   pickedRole=ch.dataset.r;if(typeof lobbyDirty==='function')lobbyDirty();document.querySelectorAll('#roleChips .chip').forEach(c=>c.classList.toggle('sel',c===ch));
