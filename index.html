@@ -1475,6 +1475,13 @@ for(const [id,x] of [['wipers',-.105],['lights',-.035],['hazard',.035],['turbo',
 }
 for(let i=_c0;i<car.children.length;i++)car.children[i].visible=false;
 for(let i=interList.length-1;i>=0;i--)if(['vol','radio','tune','wipers','lights','hazard','turbo'].includes(interList[i].userData.id))interList.splice(i,1);
+const wipBtn=new THREE.Group();car.add(wipBtn);wipBtn.visible=false;
+{const wc=document.createElement('canvas');wc.width=64;wc.height=64;const wx=wc.getContext('2d');wx.fillStyle='#16171a';wx.fillRect(0,0,64,64);wx.strokeStyle='#e8eaee';wx.lineWidth=5;wx.beginPath();wx.arc(32,52,26,Math.PI*1.15,Math.PI*1.85);wx.stroke();wx.beginPath();wx.moveTo(32,52);wx.lineTo(48,24);wx.stroke();
+ rbox(.075,.075,.03,.012,M.black,0,0,0,wipBtn);mkm(new THREE.PlaneGeometry(.06,.06),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(wc)}),0,0,.017,wipBtn).rotation.y=Math.PI;
+ wipBtn.position.set(.66,.9,-.2);wipBtn.rotation.x=-.25;}
+const wipHit=hit('wipers','Ruitenwissers',.66,.9,-.22,.11,.11,.08);
+let wipOn=false;interList.splice(interList.indexOf(wipHit),1);
+function updateWipBtn(){const on=!!Net.on;if(on===wipOn)return;wipOn=on;wipBtn.visible=on;const k=interList.indexOf(wipHit);if(on&&k<0)interList.push(wipHit);else if(!on&&k>=0)interList.splice(k,1)}
 /* ----- gauges ----- */
 const clC=document.createElement('canvas');clC.width=512;clC.height=256;
 const clX=clC.getContext('2d'),clT=new THREE.CanvasTexture(clC);clT.encoding=THREE.sRGBEncoding;
@@ -1518,27 +1525,20 @@ const wheelTilt=new THREE.Group();wheelTilt.position.set(-.42,.84,-.1);wheelTilt
 const wheelSpin=new THREE.Group();wheelTilt.add(wheelSpin);
 const colG=new THREE.Group();wheelTilt.add(colG);
 const ancL=new THREE.Object3D(),ancR=new THREE.Object3D();
+function thinWheel(r){
+  mkm(new THREE.TorusGeometry(r,.0125,10,56),M.black,0,0,0);
+  rbox(r*2-.02,.015,.011,.005,M.black,0,0,0);rbox(.015,r-.03,.011,.005,M.black,0,-(r-.03)/2,0);
+  cyl(.032,.022,M.black,0,0,.006,null,Math.PI/2,0,18);
+}
 function buildWheel(kind0){
   const kind=CARS[kind0].fam||kind0;
   clearGroup(wheelSpin);clearGroup(colG);
   PARENT=wheelSpin;
   for(let i=interList.length-1;i>=0;i--)if(interList[i].userData.id==='horn')interList.splice(i,1);
   if(kind==='race'){
-    const wr=.168,yf=-.135,phi=Math.atan2(yf,Math.sqrt(wr*wr-yf*yf)),sh=new THREE.Shape();
-    sh.absarc(0,0,wr,phi,Math.PI-phi,false);sh.closePath();
-    const ri=.124,yi=-.106,phi2=Math.atan2(yi,Math.sqrt(ri*ri-yi*yi)),hole=new THREE.Path();hole.absarc(0,0,ri,phi2,Math.PI-phi2,false);hole.closePath();sh.holes.push(hole);
-    const gm=new THREE.ExtrudeGeometry(sh,{depth:.02,bevelEnabled:true,bevelThickness:.009,bevelSize:.009,bevelSegments:4,curveSegments:40});gm.translate(0,0,-.01);
-    wheelSpin.add(new THREE.Mesh(gm,M.black));
-    rbox(.012,.04,.03,.004,M.red,0,.168,0);
-    rbox(.2,.034,.02,.012,M.black,-.1,.005,0);rbox(.2,.034,.02,.012,M.black,.1,.005,0);rbox(.04,.08,.02,.012,M.black,0,-.065,0);
-    cyl(.05,.03,M.black,0,0,.012,null,Math.PI/2,0,24);cyl(.036,.015,M.red,0,0,.03,null,Math.PI/2,0,24);
-    rbox(.034,.1,.012,.005,M.chrome,-.125,-.02,.05);rbox(.034,.1,.012,.005,M.chrome,.125,-.02,.05);
-    ancL.position.set(-.15,.045,0);ancR.position.set(.15,.045,0);
+    thinWheel(.17);ancL.position.set(-.165,.04,0);ancR.position.set(.165,.04,0);
   }else if(kind==='jeep'){
-    mkm(new THREE.TorusGeometry(.205,.017,12,48),M.black,0,0,0);
-    for(let k=0;k<4;k++){const a=k*Math.PI/2+Math.PI/4;const sp=rbox(.205,.018,.016,.007,M.black,Math.cos(a)*.1,Math.sin(a)*.1,0);sp.rotation.z=a}
-    cyl(.045,.03,M.chrome,0,0,.01,null,Math.PI/2,0,20);cyl(.03,.012,M.black,0,0,.028,null,Math.PI/2,0,20);
-    ancL.position.set(-.19,.04,0);ancR.position.set(.19,.04,0);
+    thinWheel(.19);ancL.position.set(-.18,.04,0);ancR.position.set(.18,.04,0);
   }else{
     mkm(new THREE.TorusGeometry(.135,.02,12,40),M.cartBody,0,0,0);
     for(let k=0;k<3;k++){const a=k*Math.PI*2/3+Math.PI/2;const sp=rbox(.135,.02,.014,.007,M.cartBody,Math.cos(a)*.066,Math.sin(a)*.066,0);sp.rotation.z=a}
@@ -1548,8 +1548,8 @@ function buildWheel(kind0){
   PARENT=car;
   wheelSpin.add(ancL,ancR);
   PARENT=colG;
-  if(kind==='race'){cyl(.04,.22,M.black,0,0,-.11,null,Math.PI/2,0,12);rbox(.1,.09,.12,.03,M.black,0,-.02,-.14)}
-  else if(kind==='jeep'){cyl(.035,.3,M.black,0,0,-.15,null,Math.PI/2,0,12)}
+  if(kind==='race'){cyl(.022,.22,M.black,0,0,-.11,null,Math.PI/2,0,12)}
+  else if(kind==='jeep'){cyl(.022,.3,M.black,0,0,-.15,null,Math.PI/2,0,12)}
   else{cyl(.03,.34,M.cartBody,0,0,-.17,null,Math.PI/2,0,12)}
   PARENT=car;
   wheelTilt.position.set(...CARS[kind0].wPos);wheelTilt.rotation.x=CARS[kind0].wTilt;
@@ -3825,7 +3825,7 @@ document.addEventListener('pointerlockchange',()=>{$('xhair').classList.toggle('
 cvs.addEventListener('wheel',e=>{if(hoverId==='vol'){press(e.deltaY<0?'vol+':'vol-');e.preventDefault()}},{passive:false});
 addEventListener('keydown',e=>{
   if(!T||!$('menu').classList.contains('hide'))return;
-  if(e.code==='KeyH')press('horn');else if(e.code==='KeyL')press('lights');else if(e.code==='KeyV')press('wipers');else if(e.code==='ShiftLeft'||e.code==='ShiftRight')press('turbo');else if(e.code==='KeyR'&&!e.repeat)restartRun();
+  if(e.code==='KeyH')press('horn');else if(e.code==='KeyL')press('lights');else if(e.code==='KeyV'&&!Net.on)press('wipers');else if(e.code==='ShiftLeft'||e.code==='ShiftRight')press('turbo');else if(e.code==='KeyR'&&!e.repeat)restartRun();
 });
 const _fp=new THREE.Vector3(),_fb=new THREE.Vector3(),_fd=new THREE.Vector3(),_ps=new THREE.Vector3();
 function updateFP(dt){
@@ -4164,7 +4164,7 @@ function frame(now){
   }
   lookTarget=(keys.KeyQ?1:0)*1.8-(keys.KeyE?1:0)*1.8;
   {const ml=mouseLook(),ty=clamp(lookTarget+ml[0],-2.3,2.3),tp=ml[1];lookYaw+=(ty-lookYaw)*(1-Math.exp(-9*dt));lookPitch+=(tp-lookPitch)*(1-Math.exp(-9*dt))}
-  updateCar(p,dt);
+  updateWipBtn();updateCar(p,dt);
   updateGhost(ph,recT);updateCrowd(dt,p);
   if(ph===RACE||ph===FALL||ph===RESP||ph===FIN){recT+=dt;if(recT-lastRec>=.05){lastRec=recT;REC.push({t:recT,x:p.x,y:p.y,z:p.z,psi:p.psi,pitch:p.pitch,roll:p.roll,steer:p.steer,sp:p.sp})}}
   const cp=WALK.on?{x:WALK.x,y:WALK.y,z:WALK.z}:p;
