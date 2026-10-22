@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-<script>/*BUILD:mvjn8xkb*/(function(){try{var id="mvjn8xkb";if(location.protocol==="file:")return;fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/BUILD:(\w+)\*\//);if(m&&m[1]!==id&&!sessionStorage.getItem("lll_rl_"+m[1])){sessionStorage.setItem("lll_rl_"+m[1],"1");location.replace(location.pathname+"?v="+m[1])}}).catch(function(){})}catch(e){}})();</script>
+<script>/*BUILD:mvjnj888*/(function(){try{var id="mvjnj888";if(location.protocol==="file:")return;fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/BUILD:(\w+)\*\//);if(m&&m[1]!==id&&!sessionStorage.getItem("lll_rl_"+m[1])){sessionStorage.setItem("lll_rl_"+m[1],"1");location.replace(location.pathname+"?v="+m[1])}}).catch(function(){})}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Links Links Links</title>
@@ -215,6 +215,7 @@ body.walking #hud .spd,body.walking #tTurbo,body.walking #ipad{display:none!impo
 #ipad.nopad{display:none!important}
 .sl{margin:12px 0}.sl label{display:flex;justify-content:space-between;font:700 13px var(--ff);color:var(--dim);margin-bottom:6px}.sl b{color:var(--acc2)}.sl input{width:100%;accent-color:var(--acc)}
 </style>
+<style>.actions.ow,#nav [data-t="maps"]{display:none!important}[data-tab="maps play"],[data-tab="maps"]{display:none!important}</style>
 </head>
 <body>
 <canvas id="c3d"></canvas>
@@ -1363,7 +1364,7 @@ const headL=[],beams=[];
 function setLights(on){headL.forEach(l=>{l.intensity=on?(TH.lights?4.5:2.2):0});beams.forEach(b=>{b.visible=on;b.material.opacity=TH.lights?.11:.06})}
 const mk=(c,r,m,o)=>STD(Object.assign({color:lin(c),roughness:r===undefined?.8:r,metalness:m||0},o||{}));
 const M={
-  red:mk(0xe9e7e0,.42,.12),redDark:mk(0x8e1220,.5,.2),
+  red:mk(0xc9261c,.4,.15),redDark:mk(0x8e1220,.5,.2),
   dash:mk(0x383b44,.85,0,{map:grainTex}),dash2:mk(0x555964,.8,0,{map:grainTex}),
   trim:mk(0x9a9ca6,.55,.35),chrome:mk(0xcfd3da,.3,.7),black:mk(0x0e0f12,.65),
   seat:mk(0xe0832a,.9,0,{map:grainTex}),seatDark:mk(0x24262c,.9,0,{map:grainTex}),carpet:mk(0x55565e,1,0,{map:grainTex}),
@@ -2208,7 +2209,7 @@ function shellRace(kindId){
   rbox(.62,.25,.02,.012,M.dash2,.44,.66,-.212);rbox(.1,.025,.02,.008,M.chrome,.44,.74,-.2);
   rbox(.56,.2,.04,.02,M.dash2,-.42,.52,-.25);
   rbox(.045,.025,.12,.01,M.black,-.5,.82,-.12);rbox(.045,.025,.12,.01,M.black,-.34,.82,-.12);   // column stalks
-  rbox(1.6,.03,1.9,.012,M.liner,0,(1.745+Y),.55);rbox(1.6,.05,.1,.02,M.liner,0,(1.74+Y),-.43);rbox(.14,.03,.1,.01,new THREE.MeshBasicMaterial({color:lin(0xfff4d0)}),0,(1.725+Y),.3);
+  rbox(1.6,.03,1.9,.012,M.red,0,(1.745+Y),.55);rbox(1.6,.05,.1,.02,M.red,0,(1.74+Y),-.43);rbox(.14,.03,.1,.01,new THREE.MeshBasicMaterial({color:lin(0xfff4d0)}),0,(1.725+Y),.3);
   makeDoorSaloon(-1,kindId||'race');makeDoorSaloon(1,kindId||'race');
   rbox(1.72,.05,3.2,.01,M.carpet,0,.345,-.1);rbox(.3,.22,1.5,.05,M.dash,0,.45,.3);rbox(.26,.012,.7,.005,M.carbon,0,.447,.05);
   cyl(.011,.22,M.chrome,0,.58,-.2,null,0,0,8);mkm(new THREE.SphereGeometry(.03,14,12),M.black,0,.7,-.2);cyl(.06,.05,M.black,0,.5,-.2,null,0,0,18);
