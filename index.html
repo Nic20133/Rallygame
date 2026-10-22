@@ -1526,9 +1526,16 @@ const wheelSpin=new THREE.Group();wheelTilt.add(wheelSpin);
 const colG=new THREE.Group();wheelTilt.add(colG);
 const ancL=new THREE.Object3D(),ancR=new THREE.Object3D();
 function thinWheel(r){
-  mkm(new THREE.TorusGeometry(r,.0125,10,56),M.black,0,0,0);
-  rbox(r*2-.02,.015,.011,.005,M.black,0,0,0);rbox(.015,r-.03,.011,.005,M.black,0,-(r-.03)/2,0);
-  cyl(.032,.022,M.black,0,0,.006,null,Math.PI/2,0,18);
+  const rim=mkm(new THREE.TorusGeometry(r,.021,14,64),M.black,0,0,0);rim.scale.set(1,1,.8);
+  const sp=mk(0x2a2c31,.45,.2);
+  for(const a of [Math.PI,0,-Math.PI/2]){
+    const L=r-.035,m=rbox(L,.03,.02,.009,sp,Math.cos(a)*L/2,Math.sin(a)*L/2,-.018);m.rotation.z=a;
+    m.rotation.y=0;
+  }
+  const hub=cyl(.036,.06,sp,0,0,-.03,null,Math.PI/2,0,22);hub.geometry=new THREE.CylinderGeometry(.034,.056,.06,22);hub.geometry.rotateX(Math.PI/2);hub.rotation.x=0;
+  mkm(new THREE.CylinderGeometry(.036,.036,.012,22).rotateX(Math.PI/2),M.black,0,0,.004);
+  mkm(new THREE.TorusGeometry(.036,.005,6,22),M.chrome,0,0,.01);
+  for(const s of [-1,1])mkm(new THREE.SphereGeometry(.026,10,8),M.black,s*r,0,0).scale.set(1.1,1.1,1.5);
 }
 function buildWheel(kind0){
   const kind=CARS[kind0].fam||kind0;
@@ -2374,9 +2381,9 @@ function makeGlove(hand,cuff){
   gr.userData={hands,cuff:cf};
   car.add(gr);return gr;
 }
-const mkArm=mat=>{const j=new THREE.Mesh(new THREE.SphereGeometry(.036,14,10),mat);car.add(j);return[taper(.046,.037,mat,car),taper(.035,.027,mat,car),j]};
-const gloveL=makeGlove(M.handD,M.hoodD),gloveR=makeGlove(M.handD,M.hoodD);
-const armL=mkArm(M.hoodD),armR=mkArm(M.hoodD);
+const mkArm=mat=>{const j=new THREE.Mesh(new THREE.SphereGeometry(.056,16,12),mat);car.add(j);return[taper(.07,.055,mat,car),taper(.06,.036,mat,car),j]};
+const gloveL=makeGlove(M.handD,M.skinD),gloveR=makeGlove(M.handD,M.skinD);
+const armL=mkArm(M.skinD),armR=mkArm(M.skinD);
 const shL=V3(-.655,.99,.7),shR=V3(-.185,.99,.7),_armPole=V3(0,0,0);
 function headGeo(){
   const g=new THREE.SphereGeometry(1,30,24),p=g.attributes.position;
@@ -2541,7 +2548,6 @@ function applyOutfit(slot,key){
   set(M['hand'+slot],o.glove!==undefined?o.glove:(slot==='D'?0xe2b18c:0xb7805f));
   set(M['vest'+slot],o.vest||0x4a5a3a);set(M['stripe'+slot],o.stripe||0xffffff);set(M['hat'+slot],o.hat||0x222222);
   A.hood.visible=!!o.hoodie;A.vest.visible=!!o.vest;A.stripe.visible=!!o.stripe;A.collar.visible=!!o.collar;A.cap.visible=!!o.cap;A.beanie.visible=!!o.beanie;A.shades.visible=!!o.shades;A.crown.visible=!!o.crown;
-  ARMS()[slot].forEach(a=>{a[1].material=o.short?M['hand'+slot]:M['hood'+slot]});
   fig.userData.outfit=key;
 }
 const mySlot=()=>role==='driver'?'D':'P';
@@ -2559,8 +2565,8 @@ const tabC=document.createElement('canvas');tabC.width=256;tabC.height=330;const
 tabX.fillStyle='#1c2233';tabX.fillRect(0,0,256,330);tabT.needsUpdate=true;
 const tabScr=new THREE.Mesh(new THREE.PlaneGeometry(.29,.375),new THREE.MeshBasicMaterial({map:tabT}));tabScr.position.set(0,0,.0135);tab.add(tabScr);
 bxm(.05,.05,.02,M.black,-.1,.15,-.02,tab);
-const pArm=[mkArm(M.hoodP),mkArm(M.hoodP)];
-const pGloves=[makeGlove(M.handP,M.hoodP),makeGlove(M.handP,M.hoodP)];
+const pArm=[mkArm(M.skinP),mkArm(M.skinP)];
+const pGloves=[makeGlove(M.handP,M.skinP),makeGlove(M.handP,M.skinP)];
 function placePassengerArms(){
   const dy=SEAT_DY,hd=TAB.st==='held',tgt=hd?[V3(.25,.7+dy,.35),V3(.59,.7+dy,.35)]:[V3(.27,.62+dy,.4),V3(.57,.62+dy,.4)],sh=[V3(.185,.99+dy,.7),V3(.655,.99+dy,.7)];
   pGloves.forEach((g,i)=>{g.position.copy(tgt[i]);g.rotation.set(.2,i?.4:-.4,0);
@@ -2596,9 +2602,9 @@ function updateLegs(thr,brk){
 
 setCar('race');
 // first-person fist (shown while you hit the other player)
-const fpFist=makeGlove(M.skinD,M.hoodD);camera.add(fpFist);fpFist.visible=false;
-const fpArm=taper(.05,.04,M.hoodD,camera);camera.add(fpArm);fpArm.visible=false;
-function setFpMats(drv){fpArm.material=drv?M.hoodD:M.hoodP;fpFist.userData.hands.forEach(m=>{m.material=drv?M.skinD:M.skinP});fpFist.userData.cuff.material=drv?M.hoodD:M.hoodP}
+const fpFist=makeGlove(M.skinD,M.skinD);camera.add(fpFist);fpFist.visible=false;
+const fpArm=taper(.07,.045,M.skinD,camera);camera.add(fpArm);fpArm.visible=false;
+function setFpMats(drv){fpArm.material=drv?M.skinD:M.skinP;fpFist.userData.hands.forEach(m=>{m.material=drv?M.skinD:M.skinP});fpFist.userData.cuff.material=drv?M.skinD:M.skinP}
 const UI={vol:5,winL:false,winR:false,wipers:false,lights:false,hazard:false,radio:false,station:0,doorL:false,doorR:false};
 
 /* ---------- game state ---------- */
@@ -3499,11 +3505,11 @@ function makeWalkerRig(o){
   // arms
   for(const s of [-1,1]){
     const sh=piv(spine,s*.225,.52,0);L['sh'+s]=sh;
-    add(new THREE.SphereGeometry(.058,12,10),shirt,sh,0,0,0);
-    const ua=add(new THREE.CylinderGeometry(.045,.037,.3,12),shirt,sh,0,-.15,0);
+    add(new THREE.SphereGeometry(.07,12,10),shirt,sh,0,0,0);
+    const ua=add(new THREE.CylinderGeometry(.06,.048,.3,12),skin,sh,0,-.15,0);
     const el=piv(sh,0,-.3,0);L['el'+s]=el;
-    add(new THREE.SphereGeometry(.037,10,8),shirt,el,0,0,0);
-    add(new THREE.CylinderGeometry(.036,.029,.27,12),shirt,el,0,-.135,0);
+    add(new THREE.SphereGeometry(.05,10,8),skin,el,0,0,0);
+    add(new THREE.CylinderGeometry(.052,.034,.27,12),skin,el,0,-.135,0);
     {const hm=skin.clone();if(s===1)L.handMat=hm;add(new THREE.SphereGeometry(.042,10,8),hm,el,0,-.3,0)}
   }
   // legs
