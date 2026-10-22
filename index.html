@@ -1143,21 +1143,45 @@ function buildWorld(tr){
   setQuality(quality);
 }
 const CROWD_GEO=[];
-function crowdGeo(k){
-  if(CROWD_GEO[k])return CROWD_GEO[k];
-  const shirts=[0xd0453a,0x3a6fb0,0xe0b040,0x4a9a6a,0xf0f0f0,0x8a4a9a,0x2a2a30,0xe07a30],skins=[0xf0c8a8,0xd9a37c,0xa87050,0x7a5038],hairs=[0x2b1e16,0x6a4a2a,0xc9a35c,0x111111];
+function crowdGeo(k,pose){
+  pose=pose|0;const key=k+pose*100;
+  if(CROWD_GEO[key])return CROWD_GEO[key];
+  const shirts=[0xd0453a,0x3a6fb0,0xe0b040,0x4a9a6a,0xf0f0f0,0x8a4a9a,0x2a2a30,0xe07a30],skins=[0xf0c8a8,0xd9a37c,0xa87050,0x7a5038],hairs=[0x2b1e16,0x6a4a2a,0xc9a35c,0x111111,0x8a3a1a];
+  const pants=[0x2a3040,0x3a4660,0x4a4a52,0x5a4a3a,0x22252c];
   const rr=mulberry32(k*977+5),pick=a=>a[Math.floor(rr()*a.length)];
-  const Q=(x,y,z,rx,sx,sy,sz)=>new THREE.Matrix4().compose(new THREE.Vector3(x,y,z),new THREE.Quaternion().setFromEuler(new THREE.Euler(rx||0,0,0)),new THREE.Vector3(sx||1,sy||1,sz||1));
-  const g=mergeParts([
-    {g:new THREE.CylinderGeometry(.11,.1,.82,8),m:Q(-.1,.41,0),col:L_(0x2a3040)},{g:new THREE.CylinderGeometry(.11,.1,.82,8),m:Q(.1,.41,0),col:L_(0x2a3040)},
-    {g:new THREE.CylinderGeometry(.19,.17,.66,10),m:Q(0,1.13,0),col:L_(pick(shirts))},
-    {g:new THREE.SphereGeometry(.125,10,8),m:Q(0,1.6,0),col:L_(pick(skins))},
-    {g:new THREE.SphereGeometry(.132,10,8),m:Q(0,1.65,.015,0,1,.7,1),col:L_(pick(hairs))},
-    {g:new THREE.CylinderGeometry(.04,.036,.6,6),m:Q(-.25,1.1,0),col:L_(pick(skins))},
-    {g:new THREE.CylinderGeometry(.04,.036,.5,6),m:Q(.2,1.5,-.2,-1.1),col:L_(pick(skins))},
-    {g:new THREE.BoxGeometry(.08,.16,.012),m:Q(.2,1.66,-.4,.25),col:L_(0x111114)}
-  ].concat(k%4===0?[{g:new THREE.CylinderGeometry(.018,.018,1.7,5),m:Q(-.32,1.45,-.12),col:L_(0x6b5038)},{g:new THREE.BoxGeometry(.62,.36,.012),m:Q(-.62,2.05,-.12),col:L_(shirts[(k*3)%8])}]:[]));
-  return CROWD_GEO[k]=g;
+  const shirt=pick(shirts),skin=pick(skins),hair=pick(hairs),pant=pick(pants),tall=.94+rr()*.12,hairStyle=Math.floor(rr()*4);
+  const ell=(x,y,z,sx,sy,sz,col)=>({g:new THREE.SphereGeometry(1,12,9),m:mR(x,y,z,0,0,0,sx,sy,sz),col:L_(col)});
+  const seg=(a,b,r1,r2,col)=>{const d=new THREE.Vector3().subVectors(b,a),len=d.length(),q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),d.clone().normalize());
+    const m=new THREE.Matrix4().compose(new THREE.Vector3().addVectors(a,b).multiplyScalar(.5),q,new THREE.Vector3(1,1,1));
+    return{g:new THREE.CylinderGeometry(r2,r1,len,8),m,col:L_(col)}};
+  const P=[];
+  for(const s of [-1,1]){
+    P.push(seg(V3(s*.1,.06,0),V3(s*.1,.46,0),.055,.07,pant),seg(V3(s*.1,.46,0),V3(s*.105,.93,0),.07,.085,pant));
+    P.push({g:new THREE.BoxGeometry(.12,.075,.27),m:mT(s*.1,.04,-.04),col:L_(0x17171b)});
+  }
+  P.push(ell(0,.95,0,.19,.12,.115,pant),{g:new THREE.CylinderGeometry(.205,.155,.5,12),m:new THREE.Matrix4().compose(new THREE.Vector3(0,1.19,0),new THREE.Quaternion(),new THREE.Vector3(1,1,.62)),col:L_(shirt)},ell(0,1.42,0,.235,.085,.115,shirt));
+  P.push(seg(V3(0,1.5,0),V3(0,1.58,0),.045,.04,skin));
+  P.push(ell(0,1.67,0,.112,.135,.12,skin));
+  // face: eyes
+  for(const s of [-1,1])P.push(ell(s*.042,1.685,-.108,.015,.015,.01,0x15151a));
+  // hair styles
+  if(hairStyle===0)P.push(ell(0,1.71,.012,.12,.11,.125,hair));
+  else if(hairStyle===1){P.push(ell(0,1.71,.012,.12,.11,.125,hair));P.push(ell(0,1.6,.075,.11,.16,.05,hair))}
+  else if(hairStyle===2){P.push({g:new THREE.CylinderGeometry(.13,.13,.07,12),m:mT(0,1.76,0),col:L_(shirt)});P.push({g:new THREE.BoxGeometry(.2,.02,.12),m:mT(0,1.745,-.12),col:L_(shirt)})}
+  else P.push(ell(0,1.725,.0,.118,.07,.12,hair));
+  // arms
+  for(const s of [-1,1]){
+    const sh=V3(s*.25,1.42,0);
+    let el,hand;
+    if(pose===1){el=V3(s*.37,1.66,-.03);hand=V3(s*.43,1.93,-.06)}
+    else if(pose===2&&s>0){el=V3(s*.34,1.58,-.08);hand=V3(s*.36,1.84,-.1)}
+    else{el=V3(s*.29,1.14,-.02);hand=V3(s*.3,.9,-.1)}
+    P.push(seg(sh,el,.045,.04,shirt),seg(el,hand,.038,.03,skin),ell(hand.x,hand.y,hand.z,.04,.045,.04,skin));
+    P.push(ell(sh.x,sh.y,sh.z,.06,.06,.06,shirt));
+  }
+  if(k%4===0){P.push({g:new THREE.CylinderGeometry(.016,.016,1.7,5),m:mT(-.32,1.35,-.12),col:L_(0x6b5038)},{g:new THREE.BoxGeometry(.62,.36,.012),m:mT(-.62,1.95,-.12),col:L_(shirts[(k*3)%8])})}
+  const geo=mergeParts(P);geo.scale(tall,tall,tall);
+  return CROWD_GEO[key]=geo;
 }
 function blockedAt(x,z,rad){
   const cx=Math.floor(x/8),cz=Math.floor(z/8);
@@ -1181,7 +1205,7 @@ function buildCrowd(){
         if(blockedAt(x,z,1.8))continue;
         let clear=true;for(const t of [.25,.5,.75,1]){if(blockedAt(x+(T.x[i]-x)*t,z+(T.z[i]-z)*t,1.3)){clear=false;break}}
         const y=T.y[i]+surfH(i,sgn,lat,w,f);
-        const m=new THREE.Mesh(crowdGeo(Math.floor(rr()*8)),matFoliage);m.userData.base=1;
+        const ck=Math.floor(rr()*8);const m=new THREE.Mesh(crowdGeo(ck,0),matFoliage);m.userData.base=1;m.userData.ck=ck;
         m.position.set(x,y,z);const dx=-sgn*T.nx[i]+T.tx[i]*(-.35),dz=-sgn*T.nz[i]+T.tz[i]*(-.35);
         m.rotation.y=Math.atan2(-dx,-dz);m.castShadow=false;world.add(m);pts.push({x,y,z,m,ry:m.rotation.y,clear});
       }
@@ -4278,6 +4302,7 @@ function updateCrowd(dt,p){
       if(ex){
         const ph=q.x*3.1+q.z*1.7,k=Math.abs(Math.sin(crowdT*(5+(ph%2))+ph));
         m.position.y=q.y+k*(d0<38?.34:.12);m.rotation.z=Math.sin(crowdT*4+ph)*.1;m.rotation.y=q.ry+Math.sin(crowdT*2+ph)*.15;
+        if(d0<60){const want=Math.sin(crowdT*5+ph)>.15?1:0,ck=m.userData.ck;if(m.userData.pose!==want){m.userData.pose=want;m.geometry=crowdGeo(ck,want)}}
       }
       const dx=q.x-p.x,dz=q.z-p.z;
       if(p.sp>9&&Math.abs(p.y-q.y)<2&&dx*dx+dz*dz<2.2){q.fly=true;q.ft=0;const l=Math.hypot(dx,dz)||1;q.fv=V3(dx/l*7,7.5,dz/l*7);q.fr=(R()-.5)*12;Snd.thud?Snd.thud(.5):0}
@@ -4361,7 +4386,7 @@ function snapCanvas(px,py,pz,tx,ty,tz){
 function makeThumbs(){
   const jobs=[];
   for(const k of CAR_KEYS)jobs.push(()=>{applyTheme('alps',1);setCar(k);buildLobbyDeco();figD.visible=figP.visible=true;car.position.set(0,0,0);car.rotation.set(0,0,0);sky.position.set(0,0,0);ridges.position.set(0,0,0);sun.position.set(sunDir.x*120,sunDir.y*120,sunDir.z*120);sun.target.position.set(0,0,0);sun.target.updateMatrixWorld();updateCar(_lobbyP,.016);updateFigs(.016);updateLegs(0,0);
-    const u=snapCanvas(3.4,1.9,4.6,0,.85,-.2);const el=document.querySelector('#carChips .chip[data-c="'+k+'"] .art');if(el){el.style.backgroundImage='url('+u+')';el.style.backgroundSize='cover';el.style.backgroundPosition='center';el.innerHTML=''}});
+    const u=snapCanvas(4.6,1.7,-6.4,0,.8,-.4);const el=document.querySelector('#carChips .chip[data-c="'+k+'"] .art');if(el){el.style.backgroundImage='url('+u+')';el.style.backgroundSize='cover';el.style.backgroundPosition='center';el.innerHTML=''}});
   for(const k of THEME_KEYS)jobs.push(()=>{applyTheme(k,1);setCar('race');buildLobbyDeco();figD.visible=figP.visible=true;car.position.set(0,0,0);car.rotation.set(0,0,0);sky.position.set(0,0,0);ridges.position.set(0,0,0);sun.position.set(sunDir.x*120,sunDir.y*120,sunDir.z*120);sun.target.position.set(0,0,0);sun.target.updateMatrixWorld();updateCar(_lobbyP,.016);updateFigs(.016);updateLegs(0,0);
     const u=snapCanvas(5.2,1.35,5.8,-.5,1.5,-6);const el=document.querySelector('#worldChips .chip[data-w="'+k+'"] .art');if(el){el.style.backgroundImage='url('+u+')';el.style.backgroundSize='cover';el.style.backgroundPosition='center'}});
   let i=0;
