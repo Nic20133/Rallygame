@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-<script>/*BUILD:mvjcfi77*/(function(){try{var id="mvjcfi77";if(location.protocol==="file:")return;fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/BUILD:(\w+)\*\//);if(m&&m[1]!==id&&!sessionStorage.getItem("lll_rl_"+m[1])){sessionStorage.setItem("lll_rl_"+m[1],"1");location.replace(location.pathname+"?v="+m[1])}}).catch(function(){})}catch(e){}})();</script>
+<script>/*BUILD:mvjczmfu*/(function(){try{var id="mvjczmfu";if(location.protocol==="file:")return;fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/BUILD:(\w+)\*\//);if(m&&m[1]!==id&&!sessionStorage.getItem("lll_rl_"+m[1])){sessionStorage.setItem("lll_rl_"+m[1],"1");location.replace(location.pathname+"?v="+m[1])}}).catch(function(){})}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Links Links Links</title>
@@ -1353,7 +1353,7 @@ const headL=[],beams=[];
 function setLights(on){headL.forEach(l=>{l.intensity=on?(TH.lights?4.5:2.2):0});beams.forEach(b=>{b.visible=on;b.material.opacity=TH.lights?.11:.06})}
 const mk=(c,r,m,o)=>STD(Object.assign({color:lin(c),roughness:r===undefined?.8:r,metalness:m||0},o||{}));
 const M={
-  red:mk(0x34455c,.8,.06),redDark:mk(0x8e1220,.5,.2),
+  red:mk(0xe9e7e0,.42,.12),redDark:mk(0x8e1220,.5,.2),
   dash:mk(0x383b44,.85,0,{map:grainTex}),dash2:mk(0x555964,.8,0,{map:grainTex}),
   trim:mk(0x9a9ca6,.55,.35),chrome:mk(0xcfd3da,.3,.7),black:mk(0x0e0f12,.65),
   seat:mk(0xe0832a,.9,0,{map:grainTex}),seatDark:mk(0x24262c,.9,0,{map:grainTex}),carpet:mk(0x55565e,1,0,{map:grainTex}),
@@ -1398,7 +1398,13 @@ function profileGeo(pts,width,bevel){
   const dep=width-2*bevel,g=new THREE.ExtrudeGeometry(sh,{depth:dep,bevelEnabled:bevel>0,bevelThickness:bevel,bevelSize:bevel,bevelSegments:3,curveSegments:8});
   g.translate(0,0,-dep/2);g.rotateY(Math.PI/2);g.computeVertexNormals();return g;
 }
-M.cageB=mk(0x17181c,.55,.3);M.glass=mk(0xa9c4d4,.05,.3,{transparent:true,opacity:.15,depthWrite:false,side:THREE.DoubleSide});M.red.roughness=.5;M.red.metalness=.08;M.chrome.metalness=.5;M.chrome.roughness=.4;
+M.cageB=mk(0x17181c,.55,.3);
+{const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');x.fillStyle='#26282d';x.fillRect(0,0,128,128);
+ x.fillStyle='rgba(120,124,132,.55)';for(let i=0;i<128;i+=32){x.fillRect(i+12,0,6,128);x.fillRect(0,i+12,128,6)}
+ x.fillStyle='rgba(190,30,30,.9)';for(let i=0;i<128;i+=64){x.fillRect(i+30,0,3,128);x.fillRect(0,i+30,128,3)}
+ const tx=new THREE.CanvasTexture(c);tx.wrapS=tx.wrapT=THREE.RepeatWrapping;tx.repeat.set(2,2);tx.encoding=THREE.sRGBEncoding;
+ M.seat.map=tx;M.seat.color.set(0xffffff);M.seat.needsUpdate=true;M.seatDark.map=tx;M.seatDark.color.set(0xb8b8bc);M.seatDark.needsUpdate=true}
+M.glass=mk(0xa9c4d4,.05,.3,{transparent:true,opacity:.15,depthWrite:false,side:THREE.DoubleSide});M.red.roughness=.5;M.red.metalness=.08;M.chrome.metalness=.5;M.chrome.roughness=.4;
 M.superBody=mk(0xeab820,.3,.5,{emissive:lin(0x5a3c00)});M.superTrim=mk(0x15130c,.4,.5);M.glassDark=mk(0x10161e,.1,.3,{transparent:true,opacity:.4,depthWrite:false,side:THREE.DoubleSide});
 M.hatchBody=mk(0x2f6fb8,.5,.1);M.coupeBody=mk(0xe8b81c,.45,.12);M.pickupBody=mk(0xc8571c,.55,.1);M.buggyBody=mk(0x1f8a8a,.5,.1);
 M.jeep=mk(0x58763a,.65,.1);M.jeepDark=mk(0x2f3f20,.7);M.cartBody=mk(0xf0efe8,.45,.1);M.cartGreen=mk(0x2e8b57,.5,.1);M.cartSeat=mk(0xd9d2bf,.9,0,{map:grainTex});M.rubber=mk(0x1b1c1f,.95);
@@ -1512,16 +1518,13 @@ const wheelSpin=new THREE.Group();wheelTilt.add(wheelSpin);
 const colG=new THREE.Group();wheelTilt.add(colG);
 const ancL=new THREE.Object3D(),ancR=new THREE.Object3D();
 function thinWheel(r){
-  const lea=mk(0x202226,.42,.15),sp=mk(0x33353b,.4,.3);
-  const rim=mkm(new THREE.TorusGeometry(r,.026,16,72),lea,0,0,0);rim.scale.set(1,1,.85);
-  mkm(new THREE.TorusGeometry(r,.0045,6,72),mk(0x6a6c74,.5),0,0,.021);                 // stitching
-  for(const a of [Math.PI,0,-Math.PI/2*1.0]){
-    const L=r-.03,m=rbox(L,.036,.022,.01,sp,Math.cos(a)*L/2,Math.sin(a)*L/2,-.022);m.rotation.z=a;
-  }
-  const hubG=new THREE.CylinderGeometry(.04,.062,.07,24);hubG.rotateX(Math.PI/2);mkm(hubG,sp,0,0,-.03);
-  mkm(new THREE.CylinderGeometry(.04,.04,.014,24).rotateX(Math.PI/2),lea,0,0,.008);
-  mkm(new THREE.TorusGeometry(.04,.005,8,24),M.chrome,0,0,.016);
-  for(const s of [-1,1])mkm(new THREE.SphereGeometry(.03,12,10),lea,s*r,0,0).scale.set(1,1,1.3);
+  const lea=mk(0x1c1d20,.5,.1),sp=mk(0x26282c,.55,.1);
+  const rim=mkm(new THREE.TorusGeometry(r,.024,16,72),lea,0,0,0);rim.scale.set(1,1,.85);
+  for(const a of [Math.PI,0]){const L=r-.07,m=rbox(L,.034,.02,.01,sp,Math.cos(a)*(r+.07)/2,0,-.02);m.rotation.z=0}
+  rbox(.2,.15,.05,.045,sp,0,-.005,-.012);                        // big centre pad
+  rbox(.15,.03,.012,.01,mk(0x3a3c42,.5),0,.04,.02);
+  rbox(.026,r*.6,.02,.01,sp,0,-r*.5,-.02);
+  for(const s of [-1,1])mkm(new THREE.SphereGeometry(.027,12,10),lea,s*r,0,0).scale.set(1,1,1.3);
 }
 function buildWheel(kind0){
   const kind=CARS[kind0].fam||kind0;
@@ -1769,9 +1772,10 @@ function makeWheelObj(R,wd,style){
   const face=new THREE.CylinderGeometry(rimR-.005,rimR-.005,.012,lodN(28));face.rotateZ(Math.PI/2);addS(face,M.alloyDark,tw*.55);
   const lip=new THREE.TorusGeometry(rimR,.012,6,lodN(28));lip.rotateY(Math.PI/2);addS(lip,rimMat,tw*.72);
   if(style==='hubcap'){
-    const cap=new THREE.CylinderGeometry(rimR*1.0,rimR*1.0,.03,lodN(28));cap.rotateZ(Math.PI/2);addS(cap,mk(0xa9adb5,.45,.55),tw*.6);
-    addS(new THREE.CylinderGeometry(rimR*.3,rimR*.36,.04,lodN(20)).rotateZ(Math.PI/2),mk(0x7c7f87,.4,.6),tw*.66);
-    for(let k=0;k<20;k++){const a=k/20*Math.PI*2;addS(new THREE.BoxGeometry(.012,.02,.012),mk(0x6c6f77,.5,.5),tw*.63,Math.cos(a)*rimR*.78,Math.sin(a)*rimR*.78)}
+    const disc=new THREE.CylinderGeometry(rimR*.98,rimR*.98,.03,lodN(28));disc.rotateZ(Math.PI/2);addS(disc,mk(0xb9bcc3,.5,.45),tw*.6);
+    addS(new THREE.CylinderGeometry(rimR*.3,rimR*.34,.045,lodN(18)).rotateZ(Math.PI/2),mk(0x8e9198,.4,.6),tw*.66);
+    for(let k=0;k<5;k++){const a=k/5*Math.PI*2;addS(new THREE.CylinderGeometry(rimR*.12,rimR*.12,.036,lodN(12)).rotateZ(Math.PI/2),mk(0x2a2c31,.8),tw*.62,Math.cos(a)*rimR*.62,Math.sin(a)*rimR*.62)}
+    for(let k=0;k<4;k++){const a=k/4*Math.PI*2+.4;addS(new THREE.CylinderGeometry(.014,.014,.05,8).rotateZ(Math.PI/2),M.chrome,tw*.66,Math.cos(a)*rimR*.18,Math.sin(a)*rimR*.18)}
   }else if(style==='steel'||style==='dune'){
     const disc=new THREE.CylinderGeometry(rimR-.012,rimR-.012,.03,lodN(28));disc.rotateZ(Math.PI/2);addS(disc,M.steel,tw*.6);
     const nh=style==='steel'?8:5;
@@ -1926,7 +1930,7 @@ function buildSaloon(kind){
   /* ---- roof ---- */
   const roofFn=z=>{
     const ef=z-sp.A,er=sp.Rr-z,k=Math.min(endR(ef,.34),endR(er,sp.old?.55:.4));
-    return{w:(sp.old?.83:.86)*Math.max(k,.05),yb:1.73+Y,ym:1.8+Y,yt:1.862+Y+ (1-k)*-.03,nt:sp.old?2.2:3,nb:8};
+    return{w:(sp.old?.83:.86)*Math.max(k,.05),yb:1.78+Y,ym:1.82+Y,yt:1.862+Y+ (1-k)*-.03,nt:sp.old?2.2:3,nb:8};
   };
   bodyMesh(loftBody(roofFn,sp.A,sp.Rr,{S:34,N:30}),kind==='supercar'?M.glassDark:M_,kind==='supercar'?M.glassDark:M_,kind==='supercar'?M.glassDark:M_);
   if(kind==='supercar')for(const sx of [-1,0,1])tube([sx*.8,1.86+Y,sp.A+.05],[sx*.8,1.86+Y,sp.Rr-.05],.03,M_);
@@ -1951,11 +1955,18 @@ function buildSaloon(kind){
   const nz=sp.nose;
   const lamp=mk(0xfff6d0,.2,0,{emissive:lin(0x998855)});
   if(sp.box){
-    const hy=spl(sp.hood,nz+.1);
-    for(const s of [-1,1]){rbox(.56,.2,.08,.04,M.black,s*.64,hy-.12,nz+.02);rbox(.5,.15,.06,.035,lamp,s*.64,hy-.12,nz-.01);}
-    rbox(.62,.2,.07,.03,M.black,0,hy-.12,nz+.02);for(let k=-2;k<=2;k++)rbox(.58,.016,.02,.005,mk(0x30333a,.5,.3),0,hy-.12+k*.036,nz-.02);
-    rbox(1.98,.24,.28,.08,M.black,0,.46,nz+.08);rbox(1.9,.012,.02,.004,mk(0x8a8d95,.4,.6),0,.55,nz-.05);
-    for(const s of [-1,1])rbox(.14,.07,.04,.02,mk(0xe8a030,.35,0,{emissive:lin(0x553300)}),s*.86,.47,nz-.03);
+    const hy=spl(sp.hood,nz+.1),red=mk(0xc01818,.5);
+    rbox(1.74,.2,.07,.03,M.black,0,hy-.1,nz+.02);rbox(1.74,.012,.012,.004,red,0,hy-.0,nz-.015);rbox(1.74,.012,.012,.004,red,0,hy-.2,nz-.015);
+    for(const s of [-1,1]){
+      for(const [x,r] of [[.72,.115],[.46,.088]]){
+        const c1=cyl(r+.014,.05,mk(0x9a9da4,.35,.7),s*x,hy-.1,nz+.01,null,Math.PI/2,0,22);
+        cyl(r,.06,lamp,s*x,hy-.1,nz-.005,null,Math.PI/2,0,22);
+      }
+      rbox(.14,.07,.04,.02,mk(0xe8a030,.35,0,{emissive:lin(0x553300)}),s*.86,.47,nz-.03);
+    }
+    for(let k=-3;k<=3;k++)if(k)rbox(.012,.16,.015,.004,mk(0x30333a,.5,.3),k*.1,hy-.1,nz-.015);
+    rbox(1.98,.24,.28,.08,M.black,0,.46,nz+.08);rbox(1.9,.012,.012,.004,red,0,.54,nz-.056);
+    rbox(1.2,.1,.1,.03,M.black,0,.32,nz+.14);
     rbox(.44,.1,.012,.004,M.white,0,.42,nz-.06);
   }else{
   for(const s of [-1,1]){
@@ -1979,8 +1990,8 @@ function buildSaloon(kind){
   if(kind==='race'){
       // black rubber side strips, mudflap-ish trim, big square tail lights
     for(const sx of [-1,1]){rbox(.03,.05,.5,.012,M.black,sx*(W+.002),.46,-1.5)}
-    for(const sx of [-1,1]){rbox(.36,.2,.05,.02,mk(0xc42020,.35,0,{emissive:lin(0x440808)}),sx*.66,belt-.06,tz+.012);rbox(.14,.1,.05,.02,mk(0xe8a030,.35,0,{emissive:lin(0x553300)}),sx*.5,belt-.2,tz+.012)}
-    rbox(1.98,.2,.2,.07,M.black,0,.44,tz-.06);                      // rear bumper
+    for(const sx of [-1,1]){rbox(.5,.24,.05,.02,mk(0xc42020,.35,0,{emissive:lin(0x440808)}),sx*.66,belt-.08,tz+.012);rbox(.24,.12,.05,.02,mk(0xe8a030,.35,0,{emissive:lin(0x553300)}),sx*.76,belt-.24,tz+.014)}
+    rbox(1.98,.22,.2,.07,M.black,0,.44,tz-.06);rbox(1.9,.012,.012,.004,mk(0xc01818,.5),0,.53,tz+.045);cyl(.04,.2,M.chrome,-.5,.34,tz-.1,null,Math.PI/2,0,12);                      // rear bumper
     ell(.03,.5,.03,M.black,.78,1.7+Y,.5).visible=false;
   }else if(kind==='hatch'){
     rbox(1.3,.035,.2,.015,M.black,0,sp.deck+.2,tz-.5).rotation.x=.12;
@@ -2025,8 +2036,8 @@ function makeDoorSaloon(s,kind,stat){
   const gm=new THREE.Mesh(gg,M.glass);gm.position.set(0,gy,0);piv.add(gm);
   if(!stat)GL[s<0?'L':'R']={m:gm,bot:fy+.01,half:gh/2,y0:gy};
   // handle + mirror
-  rbox(.03,.03,.2,.012,M.chrome,s*.045,belt-.1,L*.78);
-  ell(.05,.065,.1,M_,s*.08,belt+.07,.12,piv);rbox(.01,.07,.14,.004,M.mirror,s*.08,belt+.07,.2);
+  rbox(.03,.03,.2,.012,M.black,s*.045,belt-.1,L*.78);rbox(.012,.07,L-.12,.005,M.black,s*.034,.6,L/2);
+  rbox(.07,.11,.15,.02,M.black,s*.08,belt+.09,.12,piv);rbox(.01,.07,.14,.004,M.mirror,s*.08,belt+.07,.2);
   if(!stat)hitS(s<0?'winL':'winR','Raam open/dicht',-s*.05,.78,L*.7,.12,.12,.4,piv);cyl(.014,.02,M.chrome,-s*.07,.8,L*.5,null,0,Math.PI/2,10);
   rbox(.1,.06,.5,.025,M.black,-s*.04,.77,L*.62);rbox(.08,.16,.5,.03,M.black,-s*.04,.5,L*.4);
   PARENT=home;
