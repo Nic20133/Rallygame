@@ -274,11 +274,11 @@ body.walking #hud .spd,body.walking #tTurbo,body.walking #ipad{display:none!impo
             <div class="chips" id="carChips">
               <div class="chip sel" data-c="race"><div class="art" style="background:#18203a"><svg viewBox="0 0 120 46"><path d="M8 32h104l-6-9-22-3-14-9H46l-14 9-17 3z" fill="#e8283c"/><path d="M47 12h24l12 8H35z" fill="#9fc3e8"/><circle cx="32" cy="33" r="7" fill="#111"/><circle cx="88" cy="33" r="7" fill="#111"/></svg></div><b>Rallyauto</b><small>Snel en wendbaar.</small></div>
               <div class="chip" data-c="jeep"><div class="art" style="background:#1d2a1b"><svg viewBox="0 0 120 46"><path d="M10 32V16h26l5-7h38l4 7h27v16z" fill="#58763a"/><path d="M43 11h34l3 5H40z" fill="#9fc3e8"/><circle cx="34" cy="33" r="8" fill="#111"/><circle cx="88" cy="33" r="8" fill="#111"/></svg></div><b>Jeep</b><small>Zwaar, goed in modder.</small></div>
-              <div class="chip" data-c="golf"><div class="art" style="background:#1a2a2a"><svg viewBox="0 0 120 46"><path d="M16 33V22h22l6-8h40l6 8h12v11z" fill="#f0efe8"/><path d="M30 8h66v4H30z" fill="#2e8b57"/><path d="M36 12v12M92 12v12" stroke="#333" stroke-width="2"/><circle cx="38" cy="34" r="6" fill="#111"/><circle cx="86" cy="34" r="6" fill="#111"/></svg></div><b>Golfkar</b><small>Traag. Grappig.</small></div>
+              
               <div class="chip" data-c="hatch"><div class="art" style="background:#1a2a3a"></div><b>Stadsracer</b><small>Compact en wendbaar.</small></div>
               <div class="chip" data-c="coupe"><div class="art" style="background:#3a2e12"></div><b>Sportcoupe</b><small>Laag en razendsnel.</small></div>
               <div class="chip" data-c="pickup"><div class="art" style="background:#3a2210"></div><b>Pickup</b><small>Robuust met laadbak.</small></div>
-              <div class="chip" data-c="buggy"><div class="art" style="background:#10303a"></div><b>Buggy</b><small>Open, licht en wild.</small></div>
+              
               <div class="chip hide" data-c="supercar"><div class="art" style="background:#2a2410"></div><b>Owner Supercar</b><small>Uniek model. Alleen voor de owner.</small></div>
             </div>
           </div>
@@ -1435,7 +1435,7 @@ CARS.coupe=Object.assign({},CARS.race,{label:'Sportcoupe',shell:'coupe',topV:51,
 CARS.pickup=Object.assign({},CARS.jeep,{label:'Pickup',shell:'pickup',topV:39,acc:15.2,grip:8.4,steer:.54,rough:.3,eye:1.42});
 CARS.supercar=Object.assign({},CARS.race,{label:'Owner Supercar',shell:'supercar',topV:68,acc:34,grip:14,steer:.62,rough:.9,eye:1.24,dragK:.0006,fly:true,ownerOnly:true,lowCluster:true});
 CARS.buggy=Object.assign({},CARS.race,{label:'Buggy',shell:'buggy',topV:45,acc:18.5,grip:9.4,steer:.52,rough:.22,eye:1.1,ws:{w:1.3,h:.34,cy:1.16,cz:-.6,rot:.3,pivY:.96,pivZ:-.62,L:.4}});
-const CAR_KEYS=Object.keys(CARS);
+const CAR_KEYS=Object.keys(CARS).filter(k=>k!=='golf'&&k!=='buggy');
 const SHPS={race:{roof:-.2},jeep:{},golf:{},
   hatch:{hood:2.1,roof:-.1,wheelF:1.38,bumpZ:2.15},
   coupe:{hood:2.72,roof:-.3,wheelF:1.92,bumpZ:2.77,spoiler:true},
@@ -1866,7 +1866,7 @@ const SAL={
   hatch:{nose:-2.15,tail:1.95,cowl:-.82,dz:.62,w:.95,belt:.95,roofY:1.9,A:-.36,Rr:1.62,glassB:1.86,deck:1.0,
         hood:[[-2.15,.86],[-2.0,.92],[-1.5,.97],[-1.1,.99],[-.82,.99]],wheelF:1.38,wheelR:1.05,R:.34,wd:.22,rim:'mesh',box:true},
   coupe:{nose:-2.77,tail:2.0,cowl:-.98,dz:.62,w:.97,belt:.9,roofY:1.68,A:-.5,Rr:1.36,glassB:1.8,deck:.9,
-        hood:[[-2.77,.68],[-2.5,.78],[-2.0,.88],[-1.4,.93],[-.98,.94]],wheelF:1.92,wheelR:1.05,R:.35,wd:.26,rim:'turbine'},
+        hood:[[-2.77,.76],[-2.62,.82],[-2.0,.88],[-1.4,.93],[-.98,.94]],wheelF:1.92,wheelR:1.05,R:.35,wd:.26,rim:'turbine',box:true},
   supercar:{nose:-3.07,tail:2.0,cowl:-1.0,dz:.62,w:.99,belt:.84,roofY:1.6,A:-.54,Rr:1.3,glassB:1.78,deck:.84,
         hood:[[-3.07,.6],[-2.8,.7],[-2.2,.8],[-1.5,.86],[-1.0,.88]],wheelF:2.12,wheelR:1.05,R:.36,wd:.28,rim:'turbine'}
 };
