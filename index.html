@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-<script>/*BUILD:mvjo7tmq*/(function(){try{var id="mvjo7tmq";if(location.protocol==="file:")return;fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/BUILD:(\w+)\*\//);if(m&&m[1]!==id&&!sessionStorage.getItem("lll_rl_"+m[1])){sessionStorage.setItem("lll_rl_"+m[1],"1");location.replace(location.pathname+"?v="+m[1])}}).catch(function(){})}catch(e){}})();</script>
+<script>/*BUILD:mvjoge3j*/(function(){try{var id="mvjoge3j";if(location.protocol==="file:")return;fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/BUILD:(\w+)\*\//);if(m&&m[1]!==id&&!sessionStorage.getItem("lll_rl_"+m[1])){sessionStorage.setItem("lll_rl_"+m[1],"1");location.replace(location.pathname+"?v="+m[1])}}).catch(function(){})}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Links Links Links</title>
@@ -2416,7 +2416,7 @@ car.traverse(o=>{if(o.material&&o.material.isMeshBasicMaterial)o.material.toneMa
 // driver hands, arms, figures (casual clothes: hoodies, jeans, sneakers)
 Object.assign(M,{
   hoodD:mk(0x343842,.9,0,{map:grainTex}),hoodP:mk(0x24407a,.9,0,{map:grainTex}),jeans:mk(0x2a3b5f,.9,0,{map:grainTex}),
-  skinD:mk(0xcf9a72,.6),skinP:mk(0x9a6646,.6),hairD:mk(0x2b1e16,.85),hairP:mk(0xc9a35c,.85),
+  skinD:mk(0xc48c64,.7),skinP:mk(0x8d5c3e,.7),hairD:mk(0x2b1e16,.85),hairP:mk(0xc9a35c,.85),
   handD:mk(0xe2b18c,.6),handP:mk(0xb7805f,.6),pantsD:mk(0x2a3b5f,.9),pantsP:mk(0x2a3b5f,.9),shoeUD:mk(0xf2f2f2,.6),shoeUP:mk(0xf2f2f2,.6),
   vestD:mk(0x4a5a3a,.9),vestP:mk(0x4a5a3a,.9),stripeD:mk(0xffffff,.7),stripeP:mk(0xffffff,.7),hatD:mk(0x222222,.85),hatP:mk(0x222222,.85),shadeM:mk(0x0c0c10,.25,.2),
   helmD:mk(0x1a1a1e,.25,.15),helmP:mk(0x1a1a1e,.25,.15),helmSD:mk(0xffffff,.3),helmSP:mk(0xffffff,.3),lip:mk(0xa85a55,.55),brow:mk(0x2b1e16,.9),iris:new THREE.MeshBasicMaterial({color:0x4a3220}),
@@ -2470,20 +2470,20 @@ function limbGeo(profile,seg){
   pts.push(new THREE.Vector2(.0001,.5));
   const g=new THREE.LatheGeometry(pts,22);g.rotateX(Math.PI/2);g.computeVertexNormals();return g;
 }
-const UPPER_ARM=[[0,.060],[.12,.078],[.32,.086],[.52,.079],[.76,.062],[.92,.053],[1,.051]];
-const FORE_ARM=[[0,.054],[.1,.063],[.3,.067],[.55,.053],[.8,.041],[1,.034]];
-const FULL_ARM=[[0,.072],[.2,.085],[.42,.072],[.6,.063],[.82,.049],[1,.036]];
+const UPPER_ARM=[[0,.046],[.15,.054],[.35,.056],[.6,.05],[.85,.043],[1,.04]];
+const FORE_ARM=[[0,.04],[.12,.045],[.3,.046],[.6,.037],[.85,.03],[1,.027]];
+const FULL_ARM=[[0,.05],[.2,.057],[.45,.05],[.7,.04],[1,.028]];
 function makeGlove(hand,cuff,side){
   hand=hand||M.skinD;cuff=cuff||M.skinD;
   const gr=new THREE.Group();
   const hm=new THREE.Mesh(handGeo(side===undefined?1:side),hand);hm.castShadow=true;gr.add(hm);
-  const cf=cyl(.04,.07,cuff,0,0,.095,gr,Math.PI/2,0,18);
+  const cf=cyl(.03,.07,cuff,0,0,.095,gr,Math.PI/2,0,18);
   gr.userData={hands:[hm],cuff:cf};
   car.add(gr);return gr;
 }
 const mkArm=mat=>{const sp=(r)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(r,18,14),mat);car.add(m);return m};
   const up=new THREE.Mesh(limbGeo(UPPER_ARM),mat),fo=new THREE.Mesh(limbGeo(FORE_ARM),mat);car.add(up,fo);up.castShadow=fo.castShadow=true;
-  return[up,fo,sp(.052),sp(.062)]};
+  return[up,fo,sp(.04),sp(.05)]};
 const armExtras=(arm,sh,el,h)=>{if(arm[3])arm[3].position.copy(sh)};
 const gloveL=makeGlove(M.handD,M.skinD,1),gloveR=makeGlove(M.handD,M.skinD,-1);
 const armL=mkArm(M.skinD),armR=mkArm(M.skinD);
@@ -2649,7 +2649,7 @@ function applyOutfit(slot,key){
   const o=OUTFITS[key]||OUTFITS.hoodie,fig=slot==='D'?figD:figP,A=fig.userData.acc;
   const set=(m,hex)=>m.color.copy(lin(hex));
   set(M['helm'+slot],o.helm||0x1a1a1e);set(M['helmS'+slot],o.helmS||0xffffff);set(M['hood'+slot],o.top);set(M['pants'+slot],o.pants);set(M['shoeU'+slot],o.shoe);
-  set(M['hand'+slot],slot==='D'?0xcf9a72:0x9a6646);
+  set(M['hand'+slot],slot==='D'?0xc48c64:0x8d5c3e);
   set(M['vest'+slot],o.vest||0x4a5a3a);set(M['stripe'+slot],o.stripe||0xffffff);set(M['hat'+slot],o.hat||0x222222);
   A.hood.visible=!!o.hoodie;A.vest.visible=!!o.vest;A.stripe.visible=!!o.stripe;A.collar.visible=!!o.collar;A.cap.visible=!!o.cap;A.beanie.visible=!!o.beanie;A.shades.visible=!!o.shades;A.crown.visible=!!o.crown;
   fig.userData.outfit=key;
