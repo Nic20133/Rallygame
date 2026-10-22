@@ -3105,8 +3105,9 @@ function fireEvent(ev){
 /* ---------- networking (PeerJS = WebRTC, no server of our own) ---------- */
 const Net={peer:null,conn:null,on:false,isHost:false,code:'',mic:null,outCall:null};
 function netSend(o){if(Net.conn&&Net.conn.open){try{Net.conn.send(o)}catch(e){}}}
+function rndPeerId(){return 'lllg-'+Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4)}
 function peerOpts(){
-  const o={debug:0};
+  const o={debug:0,config:{iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'},{urls:'stun:global.stun.twilio.com:3478'},{urls:['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turn:openrelay.metered.ca:443?transport=tcp'],username:'openrelayproject',credential:'openrelayproject'}],iceCandidatePoolSize:4}};
   if(QP.get('peerhost')){o.host=QP.get('peerhost');o.port=+QP.get('peerport')||9000;o.path=QP.get('peerpath')||'/';o.secure=QP.get('peersecure')==='1'}
   return o;
 }
@@ -3578,7 +3579,7 @@ function owHostSetup(peer,th,label,joinCode,migrated){
   });
 }
 function owGuestConnect(targetId,cb){
-  const peer=new Peer(undefined,peerOpts());OW.peer=peer;let done=false,timer=0;
+  const peer=new Peer(rndPeerId(),peerOpts());OW.peer=peer;let done=false,timer=0;
   const finish=(fn,a1,a2)=>{if(done)return;done=true;clearTimeout(timer);if(fn)fn(a1,a2)};
   timer=setTimeout(()=>{console.info('OWPUB timeout');try{peer.destroy()}catch(e){}finish(cb.fail,'timeout')},45000);
   peer.on('error',e=>{if(!done){try{peer.destroy()}catch(_){}finish(cb.fail,e.type)}});
@@ -3686,13 +3687,15 @@ function joinRoom(){
   const code=$('codeIn').value.trim().toUpperCase();
   if(code.length!==4){setErr('Vul de code van 4 tekens in.');return}
   Snd.init();setErr('Verbinden…');
-  const peer=Net.peer=new Peer(peerOpts());
+  const peer=Net.peer=new Peer(rndPeerId(),peerOpts());
+  let pOpen=false;setTimeout(()=>{if(!pOpen)setErr('Geen verbinding met de server. Controleer je internet en probeer opnieuw.')},12000);
   peer.on('open',()=>{
+    pOpen=true;
     const c=Net.conn=peer.connect('linkslinks-'+code,{reliable:true});
     let opened=false;
     c.on('open',()=>{opened=true;setErr('')});
     c.on('data',onData);c.on('close',onClose);c.on('error',onClose);
-    setTimeout(()=>{if(!opened)setErr('Geen antwoord. Klopt de code, en staat de ander in de wachtkamer?')},9000);
+    setTimeout(()=>{if(!opened)setErr('Geen verbinding gelukt. Klopt de code, en staat de ander in de wachtkamer? Als het blijft mislukken: probeer beide hetzelfde wifi of ververs de pagina.')},20000);
   });
   peer.on('error',e=>setErr(e.type==='peer-unavailable'?'Die kamer bestaat niet (meer). Check de code.':e.type==='browser-incompatible'?RTC_MSG:'Verbinden mislukt ('+e.type+').'));
   setupCalls(peer);
