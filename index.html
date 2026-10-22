@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-<script>/*BUILD:mvjmsaye*/(function(){try{var id="mvjmsaye";if(location.protocol==="file:")return;fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/BUILD:(\w+)\*\//);if(m&&m[1]!==id&&!sessionStorage.getItem("lll_rl_"+m[1])){sessionStorage.setItem("lll_rl_"+m[1],"1");location.replace(location.pathname+"?v="+m[1])}}).catch(function(){})}catch(e){}})();</script>
+<script>/*BUILD:mvjn8xkb*/(function(){try{var id="mvjn8xkb";if(location.protocol==="file:")return;fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/BUILD:(\w+)\*\//);if(m&&m[1]!==id&&!sessionStorage.getItem("lll_rl_"+m[1])){sessionStorage.setItem("lll_rl_"+m[1],"1");location.replace(location.pathname+"?v="+m[1])}}).catch(function(){})}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Links Links Links</title>
@@ -753,7 +753,7 @@ const matSlope=STD({map:canopyT.map,normalMap:canopyT.normal,normalScale:new THR
 const matMud=STD({vertexColors:true,roughness:.08,metalness:.1,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-3});
 const matRail=STD({vertexColors:true,roughness:.45,metalness:.5,side:THREE.DoubleSide});
 const matFoliage=STD({vertexColors:true,roughness:.9,flatShading:true});
-const matTree=STD({vertexColors:true,roughness:.85});
+const matTree=STD({vertexColors:true,roughness:.9,flatShading:true});
 const matTuft=STD({vertexColors:true,roughness:1,side:THREE.DoubleSide});
 const matFloor=STD({map:canopyT.map,normalMap:canopyT.normal,roughness:1});
 
@@ -830,27 +830,37 @@ const mT=(x,y,z,sx,sy,sz)=>new THREE.Matrix4().compose(new THREE.Vector3(x,y,z),
 const mR=(x,y,z,rx,ry,rz,sx,sy,sz)=>new THREE.Matrix4().compose(new THREE.Vector3(x,y,z),new THREE.Quaternion().setFromEuler(new THREE.Euler(rx,ry,rz)),new THREE.Vector3(sx||1,sy||1,sz||1));
 const L_=lin;
 function pineG(cols,trunk,tall,snow){
-  const sc=tall||1,P=[{g:new THREE.CylinderGeometry(.13,.3,3.6*sc,10),m:mT(0,1.8*sc,0),col:L_(trunk)}],N=8;
+  const sc=tall||1,P=[{g:new THREE.CylinderGeometry(.1,.26,4.2*sc,7),m:mT(0,2.1*sc,0),col:L_(trunk)}],N=11;
   for(let i=0;i<N;i++){
-    const t=i/(N-1),r=2.2*(1-t*.84)+.12,hh=1.6+(1-t)*.7,y=(1.8+t*6.4)*sc;
-    const col=L_(cols[i%3]).multiplyScalar(.7+t*.4);
-    P.push({g:new THREE.ConeGeometry(r,hh*sc,16,1),m:mR(0,y,0,(hash(i*3)-.5)*.08,i*.9,(hash(i*7)-.5)*.08),col});
+    const t=i/(N-1),r=1.9*Math.pow(1-t,.85)+.18,hh=1.5+(1-t)*.5,y=(1.9+t*7.4)*sc;
+    const cg=new THREE.ConeGeometry(r,hh*sc,9,1),pp=cg.attributes.position;
+    for(let q=0;q<pp.count;q++){const px=pp.getX(q),pz=pp.getZ(q),rr=Math.hypot(px,pz);if(rr>.01){const n=1+.28*(hash(q*11+i*37)-.5);pp.setX(q,px*n);pp.setZ(q,pz*n);if(pp.getY(q)<0)pp.setY(q,pp.getY(q)-.18*sc*(hash(q*5+i)-.3))}}
+    const col=L_(cols[i%3]).multiplyScalar(.62+t*.5);
+    P.push({g:cg,m:mR(0,y,0,(hash(i*3)-.5)*.1,i*.9,(hash(i*7)-.5)*.1),col});
   }
-  const geo=mergeParts(P);smoothNormals(geo);return geo;
+  return mergeParts(P);
 }
 function oakG(cols,trunk,bare){
-  const P=[{g:new THREE.CylinderGeometry(.2,.46,3.6,10),m:mT(0,1.8,0),col:L_(trunk)},
-    {g:new THREE.CylinderGeometry(.07,.17,2.2,8),m:mR(.8,3.7,0,0,0,-.8),col:L_(trunk)},
-    {g:new THREE.CylinderGeometry(.07,.17,2.2,8),m:mR(-.8,3.7,0,0,0,.8),col:L_(trunk)},
-    {g:new THREE.CylinderGeometry(.06,.15,2,8),m:mR(0,3.6,.75,.8,0,0),col:L_(trunk)}];
-  for(let i=0;i<5;i++){const a=i*1.26;P.push({g:new THREE.CylinderGeometry(.08,.2,.9,6),m:mR(Math.cos(a)*.35,.25,Math.sin(a)*.35,Math.sin(a)*.5,0,-Math.cos(a)*.5),col:L_(trunk)})}
-  if(!bare)for(let i=0;i<14;i++){
-    const a=i*2.4,rad=i<4?0:1.3+hash(i*5)*1.1,y=4.6+hash(i*11)*2.2+(i<4?1.4:0),r=1.0+hash(i*13)*.9;
-    const ig=new THREE.IcosahedronGeometry(r,2),pp=ig.attributes.position;
-    for(let k=0;k<pp.count;k++){const n=1+.16*Math.sin(pp.getX(k)*3.1+i)*Math.cos(pp.getZ(k)*2.7+i*1.3);pp.setXYZ(k,pp.getX(k)*n,pp.getY(k)*n,pp.getZ(k)*n)}
-    P.push({g:ig,m:mT(Math.cos(a)*rad,y,Math.sin(a)*rad,1,.82,1),col:L_(cols[i%3]).multiplyScalar(.7+(y-4)/6*.5)});
+  const tc=L_(trunk),P=[];
+  const lim=(a,b,r1,r2,col)=>{const d=new THREE.Vector3().subVectors(b,a),len=d.length(),q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),d.clone().normalize());
+    P.push({g:new THREE.CylinderGeometry(r2,r1,len,7),m:new THREE.Matrix4().compose(new THREE.Vector3().addVectors(a,b).multiplyScalar(.5),q,new THREE.Vector3(1,1,1)),col})};
+  lim(V3(0,-.2,0),V3(.1,3.6,.05),.36,.2,tc);
+  for(let i=0;i<5;i++){const a=i*1.26+.3;P.push({g:new THREE.CylinderGeometry(.07,.2,1.1,5),m:mR(Math.cos(a)*.4,.3,Math.sin(a)*.4,Math.sin(a)*.6,0,-Math.cos(a)*.6),col:tc})}
+  const tips=[];
+  for(let i=0;i<4;i++){
+    const a=i*1.57+hash(i*3)*.8,h0=3.0+hash(i*7)*1.2,rad=1.4+hash(i*5)*.9,h1=h0+1.6+hash(i*11)*1.2;
+    const s0=V3(.1,h0,.05),s1=V3(Math.cos(a)*rad,h1,Math.sin(a)*rad);lim(s0,s1,.13,.06,tc);tips.push(s1);
+    const mid=V3(Math.cos(a)*rad*.55,h0+(h1-h0)*.6,Math.sin(a)*rad*.55);lim(mid,V3(mid.x+Math.cos(a+1)*.9,mid.y+.7,mid.z+Math.sin(a+1)*.9),.06,.03,tc);
   }
-  const geo=mergeParts(P);smoothNormals(geo);return geo;
+  tips.push(V3(.1,6.3,.05));lim(V3(.1,3.6,.05),V3(.1,6.3,.05),.2,.05,tc);
+  if(!bare)for(let t=0;t<tips.length;t++)for(let c=0;c<3;c++){
+    const k=t*3+c,tp=tips[t],ox=(hash(k*13)-.5)*1.7,oy=(hash(k*17)-.3)*1.1,oz=(hash(k*19)-.5)*1.7,r=.75+hash(k*23)*.65;
+    const ig=new THREE.IcosahedronGeometry(r,1),pp=ig.attributes.position;
+    for(let q=0;q<pp.count;q++){const n=1+.3*(hash(q*7+k*31)-.5);pp.setXYZ(q,pp.getX(q)*n*1.25,pp.getY(q)*n*.72,pp.getZ(q)*n*1.25)}
+    const y=tp.y+oy;
+    P.push({g:ig,m:mT(tp.x+ox,y,tp.z+oz),col:L_(cols[k%3]).multiplyScalar(.66+Math.min(1,(y-3)/4)*.5)});
+  }
+  return mergeParts(P);
 }
 function birchG(leaf,bare){
   const P=[];
@@ -1399,7 +1409,7 @@ function profileGeo(pts,width,bevel){
   g.translate(0,0,-dep/2);g.rotateY(Math.PI/2);g.computeVertexNormals();return g;
 }
 M.cageB=mk(0x17181c,.55,.3);
-M.seat.color.set(0x3b3d44);M.seatDark.color.set(0x25272c);M.seat.needsUpdate=true;M.seatDark.needsUpdate=true;
+M.seat.color.set(0xc47a3a);M.seatDark.color.set(0x25272c);M.seat.needsUpdate=true;M.seatDark.needsUpdate=true;
 M.glass=mk(0xa9c4d4,.05,.3,{transparent:true,opacity:.15,depthWrite:false,side:THREE.DoubleSide});M.red.roughness=.5;M.red.metalness=.08;M.chrome.metalness=.5;M.chrome.roughness=.4;
 M.superBody=mk(0xeab820,.3,.5,{emissive:lin(0x5a3c00)});M.superTrim=mk(0x15130c,.4,.5);M.glassDark=mk(0x10161e,.1,.3,{transparent:true,opacity:.4,depthWrite:false,side:THREE.DoubleSide});
 M.hatchBody=mk(0x2f6fb8,.5,.1);M.coupeBody=mk(0xe8b81c,.45,.12);M.pickupBody=mk(0xc8571c,.55,.1);M.buggyBody=mk(0x1f8a8a,.5,.1);
@@ -2018,7 +2028,7 @@ function makeDoorSaloon(s,kind,stat){
   const rr=.1;
   const pts=[[.0,.36],[L,.36],[L,belt],[0,belt]];
   sidePoly(pts,.05,.018,M_,0,piv);
-  rbox(.03,.46,L-.1,.02,M.dash2,-s*.035,.62,L/2);
+  if(!stat){rbox(.04,.42,L-.12,.03,M.dash2,-s*.038,.58,L/2);rbox(.075,.04,L-.1,.018,M.black,-s*.032,belt-.022,L/2);}
   // window frame
   const top=roofTop-.07,fy=belt;
   tube([0,fy,0.02],[0,top,sp.A-sp.cowl+.05],.03,M.black);
@@ -2036,7 +2046,15 @@ function makeDoorSaloon(s,kind,stat){
   rbox(.03,.03,.2,.012,M.black,s*.045,belt-.1,L*.78);rbox(.012,.07,L-.12,.005,M.black,s*.034,.6,L/2);
   rbox(.07,.11,.15,.02,M.black,s*.08,belt+.09,.12,piv);rbox(.01,.07,.14,.004,M.mirror,s*.08,belt+.07,.2);
   if(!stat)hitS(s<0?'winL':'winR','Raam open/dicht',-s*.05,.78,L*.7,.12,.12,.4,piv);cyl(.014,.02,M.chrome,-s*.07,.8,L*.5,null,0,Math.PI/2,10);
-  rbox(.1,.06,.5,.025,M.black,-s*.04,.77,L*.62);rbox(.08,.16,.5,.03,M.black,-s*.04,.5,L*.4);
+  if(!stat){
+    rbox(.1,.08,.55,.035,M.dash,-s*.07,.72,L*.58);                                   // armrest
+    rbox(.05,.1,.24,.025,M.black,-s*.052,.6,L*.4);rbox(.04,.03,.2,.012,M_,-s*.075,.63,L*.4);   // handle recess + pull
+    rbox(.03,.025,.14,.01,M.chrome,-s*.062,.82,L*.2);                                // door opener
+    cyl(.011,.05,mk(0xc42020,.5),-s*.05,belt+.015,L*.82,piv);                         // lock pin
+    cyl(.07,.02,M.black,-s*.05,.45,L*.3,piv,0,Math.PI/2,24);for(const r of [.03,.05])mkm(new THREE.TorusGeometry(r,.004,6,24),M.dash2,-s*.062,.45,L*.3,piv).rotation.y=Math.PI/2;
+    rbox(.06,.12,.4,.02,M.black,-s*.05,.45,L*.66);                                   // map pocket
+    cyl(.012,.05,M.chrome,-s*.06,.66,L*.84,piv,0,Math.PI/2,10);
+  }
   PARENT=home;
   if(!stat){hitS(s<0?'doorL':'doorR','Deur open/dicht',-s*.05,.83,L*.55,.16,.3,.34,piv);
   DOOR[s<0?'L':'R']=piv}
@@ -2179,15 +2197,21 @@ function shellRace(kindId){
   PARENT=shellG;const Y=SHP.roof;buildSaloon(kindId||'race');PARENT=shellG;
   rbox(1.5,.03,.2,.01,M.black,0,.925,-.9);
   mkm(profileGeo([[.2,.6],[.2,.8],[.27,.9],[.48,.935],[.78,.93],[.92,.9],[.92,.62]],1.66,.015),M.dash,0,0,0);
-  if(SHP.lowCluster){rbox(.36,.15,.03,.01,M.black,-.42,.95,-.43).rotation.x=-.5}
-  else{
-  }
-  for(const x of [-.78,.28,.78]){rbox(.1,.055,.03,.012,M.black,x,.865,-.205);for(let k=-1;k<=1;k++){const sl=bxm(.085,.006,.014,M.dash2,x,.865+k*.014,-.19);sl.rotation.x=.35}}
-  rbox(.5,.2,.02,.01,M.dash2,.42,.7,-.212);rbox(.12,.02,.015,.007,M.chrome,.42,.77,-.2);
-  rbox(1.64,.03,1.42,.012,M.liner,0,(1.79+Y),.3);rbox(.14,.03,.1,.01,new THREE.MeshBasicMaterial({color:lin(0xfff4d0)}),0,(1.765+Y),.3);
+  /* ---- dashboard details (own design: clean, dark, simple) ---- */
+  for(let k=0;k<3;k++)rbox(1.1,.006,.018,.003,M.black,0,.938,-.82+k*.045);                 // defrost slots
+  rbox(1.62,.004,.01,.002,M.black,0,.938,-.46);
+  for(const x of [-.8,.8]){rbox(.15,.075,.03,.014,M.black,x,.84,-.205);for(let k=-1;k<=2;k++){const sl=bxm(.12,.007,.014,M.dash2,x,.822+k*.016,-.19);sl.rotation.x=.3}}
+  for(const x of [-.1,.1]){cyl(.045,.02,M.black,x,.86,-.2,null,Math.PI/2,0,22);for(let k=-1;k<=1;k++)rbox(.07,.005,.012,.002,M.dash2,x,.86+k*.014,-.19)}
+  rbox(.36,.11,.03,.012,M.black,0,.75,-.205);rbox(.15,.04,.01,.004,mk(0x1d3a28,.3,0,{emissive:lin(0x0d2a14)}),-.06,.76,-.19);
+  for(const x of [.08,.14])cyl(.016,.02,M.chrome,x,.75,-.19,null,Math.PI/2,0,14);
+  rbox(.36,.07,.03,.012,M.dash2,0,.65,-.205);for(const x of [-.12,0,.12])cyl(.02,.02,M.black,x,.65,-.19,null,Math.PI/2,0,16);
+  rbox(.62,.25,.02,.012,M.dash2,.44,.66,-.212);rbox(.1,.025,.02,.008,M.chrome,.44,.74,-.2);
+  rbox(.56,.2,.04,.02,M.dash2,-.42,.52,-.25);
+  rbox(.045,.025,.12,.01,M.black,-.5,.82,-.12);rbox(.045,.025,.12,.01,M.black,-.34,.82,-.12);   // column stalks
+  rbox(1.6,.03,1.9,.012,M.liner,0,(1.745+Y),.55);rbox(1.6,.05,.1,.02,M.liner,0,(1.74+Y),-.43);rbox(.14,.03,.1,.01,new THREE.MeshBasicMaterial({color:lin(0xfff4d0)}),0,(1.725+Y),.3);
   makeDoorSaloon(-1,kindId||'race');makeDoorSaloon(1,kindId||'race');
   rbox(1.72,.05,3.2,.01,M.carpet,0,.345,-.1);rbox(.3,.22,1.5,.05,M.dash,0,.45,.3);rbox(.26,.012,.7,.005,M.carbon,0,.447,.05);
-  cyl(.012,.2,M.chrome,0,.56,-.2,null,0,0,8);mkm(new THREE.SphereGeometry(.03,12,10),M.black,0,.68,-.2);
+  cyl(.011,.22,M.chrome,0,.58,-.2,null,0,0,8);mkm(new THREE.SphereGeometry(.03,14,12),M.black,0,.7,-.2);cyl(.06,.05,M.black,0,.5,-.2,null,0,0,18);
   for(const cz of [.45,.72]){cyl(.045,.012,M.black,0,.452,cz,null,0,0,18);const rg=mkm(new THREE.TorusGeometry(.047,.006,6,18),M.chrome,0,.455,cz);rg.rotation.x=Math.PI/2}
   cyl(.036,.12,mk(0xf4f4f4,.6),0,.51,.72,null,0,0,16);cyl(.038,.02,mk(0xd02020,.5),0,.575,.72,null,0,0,16);
   rbox(.24,.065,.03,.015,M.black,0,1.6+Y,-.5);mkm(new THREE.PlaneGeometry(.21,.045),M.mirror,0,1.6+Y,-.482);limb(limbBox(.014,M.black),V3(0,(1.76+Y),-.43),V3(0,1.64+Y,-.5));
