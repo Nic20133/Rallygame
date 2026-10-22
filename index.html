@@ -1422,7 +1422,7 @@ const GEARS=[0,9,17,26,35,46,60];
 function gearInfo(sp){let g=0;while(g<GEARS.length-2&&sp>=GEARS[g+1])g++;return{g,fr:clamp((sp-GEARS[g])/(GEARS[g+1]-GEARS[g]),0,1)}}
 let SHP={hood:2.5,roof:0,wheelF:1.72,bumpZ:2.55,mat:null,jmat:null,spoiler:false,rearW:1.0,tail:1.75,doorUp:0};
 const CARS={
-  race:{label:'Rallyauto',topV:46,dragK:.0016,acc:17,grip:9,steer:.5,rough:1,eye:1.2,dy:0,wTilt:-.6,wPos:[-.42,.84,-.1],cluster:'digital',eng:'race',jumpK:1,
+  race:{label:'Rallyauto',topV:46,dragK:.0016,acc:17,grip:9,steer:.5,rough:1,eye:1.2,dy:0,wTilt:-.95,wPos:[-.42,.86,-.12],cluster:'digital',eng:'race',jumpK:1,
         ws:{w:1.72,h:.98,cy:1.34,cz:-.66,rot:.52,pivY:.94,pivZ:-.9,L:.74}},
   jeep:{label:'Jeep',topV:37,dragK:.0016,acc:15.5,grip:8.2,steer:.55,rough:.28,eye:1.38,dy:.12,wTilt:-.3,wPos:[-.42,.96,-.12],cluster:'analog',eng:'jeep',jumpK:1.15,
         ws:{w:1.64,h:.8,cy:1.36,cz:-.78,rot:.12,pivY:.98,pivZ:-.79,L:.66}},
@@ -1498,20 +1498,15 @@ function dial(cx,cy,r,f,max,step,labelStep,red,col){
 }
 function drawCluster(kmh,rpm,gear,hb,dmg){
   const g=clX,door=UI.doorL||UI.doorR;
-  if(CAR.cluster==='digital'){
-    g.fillStyle='#101114';g.fillRect(0,0,512,256);
-    for(const cx of [128,384]){g.fillStyle='#050506';g.beginPath();g.arc(cx,128,124,0,6.3);g.fill();g.fillStyle='#17191d';g.beginPath();g.arc(cx,128,116,0,6.3);g.fill()}
-    g.save();dial(128,128,108,kmh/240,240,20,40,0,'#e8e2d0');dial(384,128,108,rpm,8,1,2,6.5/8*8,'#e8e2d0');g.restore();
-    g.fillStyle='#d8d2c0';g.font='bold 16px Arial';g.textAlign='center';g.fillText('km/u',128,178);g.fillText('x1000 rpm',384,178);
-    g.fillStyle='#08090b';g.fillRect(226,96,60,46);g.fillStyle='#f0b050';g.font='bold 34px Arial';g.fillText(gear,256,131);
-    g.font='bold 14px Arial';g.fillStyle=hb||dmg>=2||door?'#e04030':'#55575e';g.fillText(hb?'(P)':dmg>=2?'MOTOR':door?'DEUR':'',256,166);
-  }else if(CAR.cluster==='analog'){
-    g.fillStyle='#14110c';g.fillRect(0,0,512,256);
-    for(const cx of [128,384]){g.fillStyle='#050505';g.beginPath();g.arc(cx,128,124,0,6.3);g.fill();g.fillStyle='#ece6d2';g.beginPath();g.arc(cx,128,116,0,6.3);g.fill()}
-    const keep=g.fillStyle;g.save();g.fillStyle='#111';
-    dial(128,128,108,kmh/200,200,20,20,0,'#b3261e');dial(384,128,108,rpm,6000,500,1000,5000/6000*6000,'#b3261e');g.restore();
-    g.fillStyle='#222';g.font='bold 16px Arial';g.textAlign='center';g.fillText('km/u',128,175);g.fillText('x1000',384,175);
-    g.fillStyle=door?'#e03030':'#8a8a80';g.fillText('DEUR',256,212);g.fillStyle=hb?'#e03030':'#8a8a80';g.fillText('(P)',256,232);g.fillStyle=dmg>=2?'#e03030':'#8a8a80';g.fillText('MOTOR',256,192);
+  if(CAR.cluster==='digital'||CAR.cluster==='analog'){
+    g.setTransform(1,0,0,1,0,0);g.fillStyle='#0b0b0d';g.fillRect(0,0,512,256);
+    g.setTransform(2,0,0,1,-256,0);
+    g.fillStyle='#050506';g.beginPath();g.arc(256,128,124,0,6.3);g.fill();g.fillStyle='#f2efe6';g.beginPath();g.arc(256,128,116,0,6.3);g.fill();
+    g.save();dial(256,128,106,kmh/240,240,20,40,0,'#d8321e');g.restore();
+    g.fillStyle='#222';g.font='bold 15px Arial';g.textAlign='center';g.fillText('km/u',256,176);
+    g.fillStyle='#111';g.font='bold 22px Arial';g.fillText(gear,256,206);
+    g.font='bold 12px Arial';g.fillStyle=hb||dmg>=2||door?'#d8321e':'#9a9a92';g.fillText(hb?'(P)':dmg>=2?'MOTOR':door?'DEUR':'',256,226);
+    g.setTransform(1,0,0,1,0,0);
   }else{
     g.fillStyle='#14120e';g.fillRect(0,0,512,256);
     g.fillStyle='#f0e0b8';g.font='bold 120px Arial';g.textAlign='center';g.fillText(Math.round(kmh),256,150);g.font='bold 26px Arial';g.fillText('KM/U',256,190);
@@ -1526,16 +1521,16 @@ const wheelSpin=new THREE.Group();wheelTilt.add(wheelSpin);
 const colG=new THREE.Group();wheelTilt.add(colG);
 const ancL=new THREE.Object3D(),ancR=new THREE.Object3D();
 function thinWheel(r){
-  const rim=mkm(new THREE.TorusGeometry(r,.021,14,64),M.black,0,0,0);rim.scale.set(1,1,.8);
-  const sp=mk(0x2a2c31,.45,.2);
-  for(const a of [Math.PI,0,-Math.PI/2]){
-    const L=r-.035,m=rbox(L,.03,.02,.009,sp,Math.cos(a)*L/2,Math.sin(a)*L/2,-.018);m.rotation.z=a;
-    m.rotation.y=0;
+  const lea=mk(0x202226,.42,.15),sp=mk(0x33353b,.4,.3);
+  const rim=mkm(new THREE.TorusGeometry(r,.026,16,72),lea,0,0,0);rim.scale.set(1,1,.85);
+  mkm(new THREE.TorusGeometry(r,.0045,6,72),mk(0x6a6c74,.5),0,0,.021);                 // stitching
+  for(const a of [Math.PI,0,-Math.PI/2*1.0]){
+    const L=r-.03,m=rbox(L,.036,.022,.01,sp,Math.cos(a)*L/2,Math.sin(a)*L/2,-.022);m.rotation.z=a;
   }
-  const hub=cyl(.036,.06,sp,0,0,-.03,null,Math.PI/2,0,22);hub.geometry=new THREE.CylinderGeometry(.034,.056,.06,22);hub.geometry.rotateX(Math.PI/2);hub.rotation.x=0;
-  mkm(new THREE.CylinderGeometry(.036,.036,.012,22).rotateX(Math.PI/2),M.black,0,0,.004);
-  mkm(new THREE.TorusGeometry(.036,.005,6,22),M.chrome,0,0,.01);
-  for(const s of [-1,1])mkm(new THREE.SphereGeometry(.026,10,8),M.black,s*r,0,0).scale.set(1.1,1.1,1.5);
+  const hubG=new THREE.CylinderGeometry(.04,.062,.07,24);hubG.rotateX(Math.PI/2);mkm(hubG,sp,0,0,-.03);
+  mkm(new THREE.CylinderGeometry(.04,.04,.014,24).rotateX(Math.PI/2),lea,0,0,.008);
+  mkm(new THREE.TorusGeometry(.04,.005,8,24),M.chrome,0,0,.016);
+  for(const s of [-1,1])mkm(new THREE.SphereGeometry(.03,12,10),lea,s*r,0,0).scale.set(1,1,1.3);
 }
 function buildWheel(kind0){
   const kind=CARS[kind0].fam||kind0;
@@ -2158,9 +2153,9 @@ function shellRace(kindId){
   mkm(profileGeo([[.2,.6],[.2,.8],[.27,.9],[.48,.935],[.78,.93],[.92,.9],[.92,.62]],1.66,.015),M.dash,0,0,0);
   if(SHP.lowCluster){rbox(.36,.15,.03,.01,M.black,-.42,.95,-.43).rotation.x=-.5}
   else{
-  rbox(.49,.25,.03,.014,M.black,-.42,.99,-.4).rotation.x=-.45;
-  rbox(.5,.022,.1,.01,M.black,-.42,1.125,-.36).rotation.x=.25;
-  rbox(.03,.18,.2,.012,M.black,-.665,1.03,-.38);rbox(.03,.18,.2,.012,M.black,-.175,1.03,-.38);
+  rbox(.3,.25,.03,.014,M.black,-.42,.99,-.4).rotation.x=-.45;
+  rbox(.32,.022,.1,.01,M.black,-.42,1.125,-.36).rotation.x=.25;
+  rbox(.03,.18,.2,.012,M.black,-.58,1.03,-.38);rbox(.03,.18,.2,.012,M.black,-.26,1.03,-.38);
   }
   for(const x of [-.78,.28,.78]){rbox(.1,.055,.03,.012,M.black,x,.865,-.205);for(let k=-1;k<=1;k++){const sl=bxm(.085,.006,.014,M.dash2,x,.865+k*.014,-.19);sl.rotation.x=.35}}
   rbox(.5,.2,.02,.01,M.dash2,.42,.7,-.212);rbox(.12,.02,.015,.007,M.chrome,.42,.77,-.2);
@@ -2208,7 +2203,7 @@ function shellJeep(kindId){
   mkm(profileGeo([[.2,.58],[.2,.84],[.28,.95],[.5,1.0],[.66,.995],[.74,.95],[.74,.6]],1.7,.025),M.dash,0,0,0);rbox(1.64,.02,.3,.01,M.dash2,0,1.008,-.55);
   for(const x of [-.04,.12])cyl(.05,.02,M.black,x,.78,-.195,null,Math.PI/2,0,16);rbox(.2,.3,.1,.03,M.dash2,.04,.78,-.2);
   tube([.2,1.01,-.5],[.2,1.09,-.5],.016,M.chrome);tube([.64,1.01,-.5],[.64,1.09,-.5],.016,M.chrome);tube([.2,1.09,-.5],[.64,1.09,-.5],.02,M.chrome);
-  rbox(.64,.3,.14,.06,M.cageB,-.42,1.12,-.37);
+  rbox(.4,.3,.14,.06,M.cageB,-.42,1.12,-.37);
   for(const x of [-.78,.78]){cyl(.055,.03,M.black,x,.82,-.215,null,Math.PI/2,0,18)}
   rbox(.5,.18,.02,.01,M.dash2,.42,.7,-.19);rbox(.1,.022,.015,.007,M.chrome,.42,.76,-.178);
   rbox(1.66,.07,.07,.02,J,0,.95,-.82);
@@ -2266,10 +2261,10 @@ function setCar(kind){
   }
   // gauges and mirror/air freshener position
   const fam2=CARS[kind].fam||kind;
-  if(fam2==='race'){clMesh.position.set(-.42,.992,-.382);clMesh.rotation.x=-.45;clMesh.scale.set(1,1,1);fresh.position.set(.12,1.58+(SHP.roof||0),-.49)}
-  else if(fam2==='jeep'){clMesh.position.set(-.42,1.12,-.292);clMesh.rotation.x=-.12;clMesh.scale.set(1.18,1.18,1);fresh.position.set(.12,1.6,-.76)}
+  if(fam2==='race'){clMesh.position.set(-.42,.992,-.382);clMesh.rotation.x=-.45;clMesh.scale.set(.56,1,1);fresh.position.set(.12,1.58+(SHP.roof||0),-.49)}
+  else if(fam2==='jeep'){clMesh.position.set(-.42,1.12,-.292);clMesh.rotation.x=-.12;clMesh.scale.set(.7,1.18,1);fresh.position.set(.12,1.6,-.76)}
   else{clMesh.position.set(-.42,.97,-.38);clMesh.rotation.x=-.5;clMesh.scale.set(.5,.5,1);fresh.position.set(.12,1.78,-.55)}
-  if(CARS[kind].lowCluster){clMesh.position.set(-.42,.955,-.4);clMesh.rotation.x=-.52;clMesh.scale.set(.62,.62,1)}
+  if(CARS[kind].lowCluster){clMesh.position.set(-.42,.955,-.4);clMesh.rotation.x=-.52;clMesh.scale.set(.36,.62,1)}
   setWS(CAR.ws);
   placePassengerArms();placePassengerLegs();shL.y=.99+SEAT_DY;shR.y=.99+SEAT_DY;
   figD.position.y=SEAT_DY;figP.position.y=SEAT_DY;tab.position.set(HOLD.x,HOLD.y+SEAT_DY,HOLD.z);tab.rotation.set(-1.0,0,0);
@@ -2358,7 +2353,7 @@ car.traverse(o=>{if(o.material&&o.material.isMeshBasicMaterial)o.material.toneMa
 // driver hands, arms, figures (casual clothes: hoodies, jeans, sneakers)
 Object.assign(M,{
   hoodD:mk(0x343842,.9,0,{map:grainTex}),hoodP:mk(0x24407a,.9,0,{map:grainTex}),jeans:mk(0x2a3b5f,.9,0,{map:grainTex}),
-  skinD:mk(0xe2b18c,.6),skinP:mk(0xb7805f,.6),hairD:mk(0x2b1e16,.85),hairP:mk(0xc9a35c,.85),
+  skinD:mk(0xcf9a72,.6),skinP:mk(0x9a6646,.6),hairD:mk(0x2b1e16,.85),hairP:mk(0xc9a35c,.85),
   handD:mk(0xe2b18c,.6),handP:mk(0xb7805f,.6),pantsD:mk(0x2a3b5f,.9),pantsP:mk(0x2a3b5f,.9),shoeUD:mk(0xf2f2f2,.6),shoeUP:mk(0xf2f2f2,.6),
   vestD:mk(0x4a5a3a,.9),vestP:mk(0x4a5a3a,.9),stripeD:mk(0xffffff,.7),stripeP:mk(0xffffff,.7),hatD:mk(0x222222,.85),hatP:mk(0x222222,.85),shadeM:mk(0x0c0c10,.25,.2),
   helmD:mk(0x1a1a1e,.25,.15),helmP:mk(0x1a1a1e,.25,.15),helmSD:mk(0xffffff,.3),helmSP:mk(0xffffff,.3),lip:mk(0xa85a55,.55),brow:mk(0x2b1e16,.9),iris:new THREE.MeshBasicMaterial({color:0x4a3220}),
@@ -2384,7 +2379,7 @@ function makeGlove(hand,cuff){
 const mkArm=mat=>{const j=new THREE.Mesh(new THREE.SphereGeometry(.056,16,12),mat);car.add(j);return[taper(.07,.055,mat,car),taper(.06,.036,mat,car),j]};
 const gloveL=makeGlove(M.handD,M.skinD),gloveR=makeGlove(M.handD,M.skinD);
 const armL=mkArm(M.skinD),armR=mkArm(M.skinD);
-const shL=V3(-.655,.99,.7),shR=V3(-.185,.99,.7),_armPole=V3(0,0,0);
+const shL=V3(-.72,.99,.5),shR=V3(-.14,.99,.5),_armPole=V3(0,0,0);
 function headGeo(){
   const g=new THREE.SphereGeometry(1,30,24),p=g.attributes.position;
   for(let i=0;i<p.count;i++){
