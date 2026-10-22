@@ -221,7 +221,7 @@ body.walking #hud .spd,body.walking #tTurbo,body.walking #ipad{display:none!impo
 <div id="hud" class="hide">
   <div class="tl"><span id="tTime">0:00.0</span><small id="tSub"></small></div>
   <div class="tr"><div id="tCp"></div><div id="tFall"></div></div>
-  <div class="spd"><span id="tSpd">0</span><small>km/u</small><div id="tTurbo"></div></div>
+  <div class="spd" style="display:none"><span id="tSpd">0</span><small>km/u</small><div id="tTurbo"></div></div>
   <div id="big"></div>
   <div id="owInfo" class="hide"></div>
   <div id="msg"></div>
@@ -239,8 +239,8 @@ body.walking #hud .spd,body.walking #tTurbo,body.walking #ipad{display:none!impo
 <div id="ipad" class="hide">
   <div class="screen">
     <canvas id="map"></canvas>
-    <div class="ih"><span id="iTime">0:00.0</span><span class="grip">:::</span><span id="iSpd">0 km/u</span></div>
-    <div id="ipadBtns"><button data-id="wipers">Wissers</button><button data-id="lights">Licht</button><button data-id="horn">Claxon</button><button data-id="turbo">Turbo</button></div>
+    <div class="ih"><span id="iTime">0:00.0</span><span class="grip">:::</span><span id="iSpd"></span></div>
+    <div id="ipadBtns"><button data-id="wipers">Wissers</button><button data-id="lights">Licht</button><button data-id="horn">Claxon</button></div>
     <button id="ipadBtn">Formaat (T)</button>
     <div id="ipadResize"></div>
   </div>
@@ -752,6 +752,7 @@ const matSlope=STD({map:canopyT.map,normalMap:canopyT.normal,normalScale:new THR
 const matMud=STD({vertexColors:true,roughness:.08,metalness:.1,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-3});
 const matRail=STD({vertexColors:true,roughness:.45,metalness:.5,side:THREE.DoubleSide});
 const matFoliage=STD({vertexColors:true,roughness:.9,flatShading:true});
+const matTree=STD({vertexColors:true,roughness:.85});
 const matTuft=STD({vertexColors:true,roughness:1,side:THREE.DoubleSide});
 const matFloor=STD({map:canopyT.map,normalMap:canopyT.normal,roughness:1});
 
@@ -828,24 +829,27 @@ const mT=(x,y,z,sx,sy,sz)=>new THREE.Matrix4().compose(new THREE.Vector3(x,y,z),
 const mR=(x,y,z,rx,ry,rz,sx,sy,sz)=>new THREE.Matrix4().compose(new THREE.Vector3(x,y,z),new THREE.Quaternion().setFromEuler(new THREE.Euler(rx,ry,rz)),new THREE.Vector3(sx||1,sy||1,sz||1));
 const L_=lin;
 function pineG(cols,trunk,tall,snow){
-  const sc=tall||1,P=[{g:new THREE.CylinderGeometry(.13,.3,3.6*sc,7),m:mT(0,1.8*sc,0),col:L_(trunk)}],N=8;
+  const sc=tall||1,P=[{g:new THREE.CylinderGeometry(.13,.3,3.6*sc,10),m:mT(0,1.8*sc,0),col:L_(trunk)}],N=8;
   for(let i=0;i<N;i++){
     const t=i/(N-1),r=2.2*(1-t*.84)+.12,hh=1.6+(1-t)*.7,y=(1.8+t*6.4)*sc;
     const col=L_(cols[i%3]).multiplyScalar(.7+t*.4);
-    P.push({g:new THREE.ConeGeometry(r,hh*sc,10),m:mR(0,y,0,(hash(i*3)-.5)*.08,i*.9,(hash(i*7)-.5)*.08),col});
+    P.push({g:new THREE.ConeGeometry(r,hh*sc,16,1),m:mR(0,y,0,(hash(i*3)-.5)*.08,i*.9,(hash(i*7)-.5)*.08),col});
   }
-  return mergeParts(P);
+  const geo=mergeParts(P);smoothNormals(geo);return geo;
 }
 function oakG(cols,trunk,bare){
-  const P=[{g:new THREE.CylinderGeometry(.22,.42,3.5,7),m:mT(0,1.75,0),col:L_(trunk)},
-    {g:new THREE.CylinderGeometry(.09,.17,2.1,5),m:mR(.75,3.6,0,0,0,-.75),col:L_(trunk)},
-    {g:new THREE.CylinderGeometry(.09,.17,2.1,5),m:mR(-.75,3.6,0,0,0,.75),col:L_(trunk)},
-    {g:new THREE.CylinderGeometry(.08,.15,1.9,5),m:mR(0,3.5,.7,.75,0,0),col:L_(trunk)}];
-  if(!bare)for(let i=0;i<10;i++){
-    const a=i*2.4,rad=i<3?0:1.5+hash(i*5)*.9,y=4.5+hash(i*11)*2.2+(i<3?1.3:0),r=1.05+hash(i*13)*.95;
-    P.push({g:new THREE.IcosahedronGeometry(r,1),m:mT(Math.cos(a)*rad,y,Math.sin(a)*rad,1,.85,1),col:L_(cols[i%3]).multiplyScalar(.72+(y-4)/6*.45)});
+  const P=[{g:new THREE.CylinderGeometry(.2,.46,3.6,10),m:mT(0,1.8,0),col:L_(trunk)},
+    {g:new THREE.CylinderGeometry(.07,.17,2.2,8),m:mR(.8,3.7,0,0,0,-.8),col:L_(trunk)},
+    {g:new THREE.CylinderGeometry(.07,.17,2.2,8),m:mR(-.8,3.7,0,0,0,.8),col:L_(trunk)},
+    {g:new THREE.CylinderGeometry(.06,.15,2,8),m:mR(0,3.6,.75,.8,0,0),col:L_(trunk)}];
+  for(let i=0;i<5;i++){const a=i*1.26;P.push({g:new THREE.CylinderGeometry(.08,.2,.9,6),m:mR(Math.cos(a)*.35,.25,Math.sin(a)*.35,Math.sin(a)*.5,0,-Math.cos(a)*.5),col:L_(trunk)})}
+  if(!bare)for(let i=0;i<14;i++){
+    const a=i*2.4,rad=i<4?0:1.3+hash(i*5)*1.1,y=4.6+hash(i*11)*2.2+(i<4?1.4:0),r=1.0+hash(i*13)*.9;
+    const ig=new THREE.IcosahedronGeometry(r,2),pp=ig.attributes.position;
+    for(let k=0;k<pp.count;k++){const n=1+.16*Math.sin(pp.getX(k)*3.1+i)*Math.cos(pp.getZ(k)*2.7+i*1.3);pp.setXYZ(k,pp.getX(k)*n,pp.getY(k)*n,pp.getZ(k)*n)}
+    P.push({g:ig,m:mT(Math.cos(a)*rad,y,Math.sin(a)*rad,1,.82,1),col:L_(cols[i%3]).multiplyScalar(.7+(y-4)/6*.5)});
   }
-  return mergeParts(P);
+  const geo=mergeParts(P);smoothNormals(geo);return geo;
 }
 function birchG(leaf,bare){
   const P=[];
@@ -1067,7 +1071,7 @@ function buildWorld(tr){
         if(o.col!==undefined){const b=.75+o.col*.5;m.setColorAt(n,new THREE.Color(b,b*(.95+o.col*.1),b*.9))}});
       m.frustumCulled=false;m.castShadow=!!cast;m.receiveShadow=false;g.add(m);
     };
-    inst(treeA,matFoliage,A,true);inst(treeB,matFoliage,B,true);inst(treeC,matFoliage,C,true);inst(treeD,matFoliage,D,true);inst(bushGeo,matFoliage,bushes,false);inst(tuftGeo,matTuft,tufts,false);
+    inst(treeA,matTree,A,true);inst(treeB,matTree,B,true);inst(treeC,matTree,C,true);inst(treeD,matTree,D,true);inst(bushGeo,matFoliage,bushes,false);inst(tuftGeo,matTuft,tufts,false);
     if(boulders.length){
       const m=new THREE.InstancedMesh(rockGeo,matFoliage,boulders.length);
       boulders.forEach((o,n)=>{dum.position.set(o.x,o.y,o.z);dum.rotation.set((o.flat?(hash(n+c0)-.5)*.5:0),o.rot,0);dum.scale.set(o.flat?o.s*1.35:o.s,o.flat?o.s*.7:o.s,o.s);dum.updateMatrix();m.setMatrixAt(n,dum.matrix);const b=.8+hash(n*7+c0)*.4;m.setColorAt(n,new THREE.Color(cRA.r*b,cRA.g*b,cRA.b*b))});
@@ -1408,7 +1412,7 @@ const GEARS=[0,9,17,26,35,46,60];
 function gearInfo(sp){let g=0;while(g<GEARS.length-2&&sp>=GEARS[g+1])g++;return{g,fr:clamp((sp-GEARS[g])/(GEARS[g+1]-GEARS[g]),0,1)}}
 let SHP={hood:2.5,roof:0,wheelF:1.72,bumpZ:2.55,mat:null,jmat:null,spoiler:false,rearW:1.0,tail:1.75,doorUp:0};
 const CARS={
-  race:{label:'Rallyauto',topV:46,dragK:.0016,acc:17,grip:9,steer:.5,rough:1,eye:1.2,dy:0,wTilt:-.95,wPos:[-.42,.86,-.12],cluster:'digital',eng:'race',jumpK:1,
+  race:{label:'Rallyauto',topV:31,dragK:.0016,acc:7.5,grip:9,steer:.5,rough:1,eye:1.2,dy:0,wTilt:-.95,wPos:[-.42,.86,-.12],cluster:'digital',eng:'race',jumpK:1,
         ws:{w:1.72,h:.98,cy:1.34,cz:-.66,rot:.52,pivY:.94,pivZ:-.9,L:.74}},
   jeep:{label:'Jeep',topV:37,dragK:.0016,acc:15.5,grip:8.2,steer:.55,rough:.28,eye:1.38,dy:.12,wTilt:-.3,wPos:[-.42,.96,-.12],cluster:'analog',eng:'jeep',jumpK:1.15,
         ws:{w:1.64,h:.8,cy:1.36,cz:-.78,rot:.12,pivY:.98,pivZ:-.79,L:.66}},
@@ -2139,9 +2143,6 @@ function shellRace(kindId){
   mkm(profileGeo([[.2,.6],[.2,.8],[.27,.9],[.48,.935],[.78,.93],[.92,.9],[.92,.62]],1.66,.015),M.dash,0,0,0);
   if(SHP.lowCluster){rbox(.36,.15,.03,.01,M.black,-.42,.95,-.43).rotation.x=-.5}
   else{
-  rbox(.3,.25,.03,.014,M.black,-.42,.99,-.4).rotation.x=-.45;
-  rbox(.32,.022,.1,.01,M.black,-.42,1.125,-.36).rotation.x=.25;
-  rbox(.03,.18,.2,.012,M.black,-.58,1.03,-.38);rbox(.03,.18,.2,.012,M.black,-.26,1.03,-.38);
   }
   for(const x of [-.78,.28,.78]){rbox(.1,.055,.03,.012,M.black,x,.865,-.205);for(let k=-1;k<=1;k++){const sl=bxm(.085,.006,.014,M.dash2,x,.865+k*.014,-.19);sl.rotation.x=.35}}
   rbox(.5,.2,.02,.01,M.dash2,.42,.7,-.212);rbox(.12,.02,.015,.007,M.chrome,.42,.77,-.2);
@@ -2251,6 +2252,7 @@ function setCar(kind){
   else if(fam2==='jeep'){clMesh.position.set(-.42,1.12,-.292);clMesh.rotation.x=-.12;clMesh.scale.set(.7,1.18,1);fresh.position.set(.12,1.6,-.76)}
   else{clMesh.position.set(-.42,.97,-.38);clMesh.rotation.x=-.5;clMesh.scale.set(.5,.5,1);fresh.position.set(.12,1.78,-.55)}
   if(CARS[kind].lowCluster){clMesh.position.set(-.42,.955,-.4);clMesh.rotation.x=-.52;clMesh.scale.set(.36,.62,1)}
+  clMesh.visible=false;
   setWS(CAR.ws);
   placePassengerArms();placePassengerLegs();shL.y=.99+SEAT_DY;shR.y=.99+SEAT_DY;
   figD.position.y=SEAT_DY;figP.position.y=SEAT_DY;tab.position.set(HOLD.x,HOLD.y+SEAT_DY,HOLD.z);tab.rotation.set(-1.0,0,0);
@@ -2694,6 +2696,7 @@ function landing(impact,airT){
   else if(impact>3.5)emit({e:'thud',sev:clamp(impact/9,0,1.2)});
 }
 function tryTurbo(){
+  return;
   if(S.ph!==RACE||S.turboCd>0)return;
   S.turbo=2.5;S.turboCd=12;emit({e:'turbo'});
 }
@@ -4189,7 +4192,7 @@ function frame(now){
   $('tFall').textContent=falls?'Ravijn-duiken: '+falls:'';
   $('tSpd').textContent=Math.round(spd*3.6);
   $('tTurbo').textContent=drv?(S.turboCd>0?'TURBO '+Math.ceil(S.turboCd)+'s':'TURBO klaar (Shift)'):'';
-  $('iTime').textContent=fmt(tm);$('iSpd').textContent=Math.round(spd*3.6)+' km/u';
+  $('iTime').textContent=fmt(tm);
   let big='';
   if(ph===COUNT)big=Math.ceil(cdv)>3?'KLAAR?':String(Math.ceil(cdv));
   else if(drv&&S.goT>0&&ph===RACE)big='GO!';
