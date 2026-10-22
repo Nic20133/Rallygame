@@ -1667,6 +1667,7 @@ function ringPts(s,N){
     if(k===0){x=s.w*SSn(Math.sin(t),s.nt);y=s.ym+(s.yt-s.ym)*SSn(Math.cos(t),s.nt)}
     else if(k===1){x=s.w*SSn(Math.cos(t),s.nb);y=s.ym-(s.ym-s.yb)*SSn(Math.sin(t),s.nb)}
     else if(k===2){x=-s.w*SSn(Math.sin(t),s.nb);y=s.ym-(s.ym-s.yb)*SSn(Math.cos(t),s.nb)}
+    if(s.bulge&&(k===1||k===2)){const q=Math.max(0,Math.min(1,(y-s.yb)/(s.ym-s.yb)));x+=Math.sign(x)*s.bulge*Math.sin(Math.PI*q)}
     else{x=-s.w*SSn(Math.cos(t),s.nt);y=s.ym+(s.yt-s.ym)*SSn(Math.sin(t),s.nt)}
     pts.push([x,y]);
   }
@@ -1858,7 +1859,7 @@ function animWheels(sp,steer,dt){
 /* ===== saloon family: race / hatch / coupe / supercar ===== */
 const SAL={
   race:{nose:-2.3,tail:1.95,cowl:-.9,dz:.62,w:.95,belt:.95,roofY:1.84,A:-.46,Rr:1.56,glassB:1.86,deck:.99,
-        hood:[[-2.3,.9],[-2.2,.95],[-1.6,.97],[-1.2,.98],[-.9,.98]],wheelF:1.5,wheelR:1.1,R:.34,wd:.2,rim:'hubcap',box:true,old:true},
+        hood:[[-2.3,.9],[-2.2,.95],[-1.6,.97],[-1.2,.98],[-.9,.98]],wheelF:1.5,wheelR:1.1,R:.34,wd:.2,rim:'hubcap',box:true,old:true,bulge:.04},
   hatch:{nose:-2.15,tail:1.95,cowl:-.82,dz:.62,w:.95,belt:.95,roofY:1.9,A:-.36,Rr:1.62,glassB:1.86,deck:1.0,
         hood:[[-2.15,.86],[-2.0,.92],[-1.5,.97],[-1.1,.99],[-.82,.99]],wheelF:1.38,wheelR:1.05,R:.34,wd:.22,rim:'mesh',box:true},
   coupe:{nose:-2.77,tail:2.0,cowl:-.98,dz:.62,w:.97,belt:.9,roofY:1.68,A:-.5,Rr:1.36,glassB:1.8,deck:.9,
@@ -1884,30 +1885,30 @@ function buildSaloon(kind){
     const yt=spl(sp.hood,z);
     const fl=.03*Math.exp(-Math.pow((z+sp.wheelF)/.55,2));
     const w=(W*(.94+.06*smoothstep(0,.9,e))+fl)*Math.max(k,.06);
-    return{w,yb:.31+(1-kh)*.1,ym:yt-.03-.02*(1-kh),yt:yt-(1-kh)*.04,nt:4.6,nb:4.4};
+    return{w,yb:.31+(1-kh)*.1,ym:yt-.03-.02*(1-kh),yt:yt-(1-kh)*.04,nt:sp.old?3.6:4.6,nb:sp.old?3.2:4.4,bulge:(sp.bulge||0)*smoothstep(0,.6,e)};
   };
   bodyMesh(loftBody(frontFn,sp.nose,sp.cowl,{arches,S:56,N:40}),M_,M_,M.black);
   /* ---- sills (black rocker between the wheels) ---- */
   bodyMesh(loftBody(z=>({w:W-.005,yb:.3,ym:.5,yt:.5,nt:3,nb:4.5,open:true}),sp.cowl,sp.dz,{S:6,N:24,cap0:false,cap1:false}),M.black);
   /* ---- rear quarter (open top, belt height) then the deck ---- */
-  const rearOpen=z=>({w:W+.03*Math.exp(-Math.pow((z-sp.wheelR)/.55,2)),yb:.32,ym:belt,yt:belt,nt:3,nb:4.6,open:true});
+  const rearOpen=z=>({w:W+.03*Math.exp(-Math.pow((z-sp.wheelR)/.55,2)),yb:.32,ym:belt,yt:belt,nt:3,nb:sp.old?3.2:4.6,open:true,bulge:sp.bulge||0});
   bodyMesh(loftBody(rearOpen,sp.dz,sp.Rr+.06,{arches,S:30,N:40,cap0:false,cap1:false}),M_);
   const deckFn=z=>{
-    const e=sp.tail-z,k=endR(e,sp.box?.12:.26),kh=endR(e,sp.box?.16:.5);
+    const e=sp.tail-z,k=endR(e,sp.old?.34:sp.box?.12:.26),kh=endR(e,sp.old?.4:sp.box?.16:.5);
     const yt=spl([[sp.Rr+.06,sp.deck],[sp.glassB,sp.deck+.01],[sp.tail,sp.deck-.1]],z);
     const fl=.03*Math.exp(-Math.pow((z-sp.wheelR)/.55,2));
-    return{w:(W+fl)*Math.max(.9+.1*k,.06)*Math.max(k,.06),yb:.31+(1-kh)*.14,ym:Math.min(belt,yt-.03),yt:yt-(1-kh)*.03,nt:4,nb:4.4};
+    return{w:(W+fl)*Math.max(.9+.1*k,.06)*Math.max(k,.06),yb:.31+(1-kh)*.14,ym:Math.min(belt,yt-.03),yt:yt-(1-kh)*.03,nt:sp.old?3.2:4,nb:sp.old?3.2:4.4,bulge:(sp.bulge||0)*smoothstep(0,.5,e)};
   };
   bodyMesh(loftBody(deckFn,sp.Rr+.06,sp.tail,{S:30,N:40,arches}),M_,M.black,M_);
   /* ---- roof ---- */
   const roofFn=z=>{
-    const ef=z-sp.A,er=sp.Rr-z,k=Math.min(endR(ef,.34),endR(er,.4));
-    return{w:.86*Math.max(k,.05),yb:1.8+Y,ym:1.83+Y,yt:1.862+Y+ (1-k)*-.03,nt:3,nb:8};
+    const ef=z-sp.A,er=sp.Rr-z,k=Math.min(endR(ef,.34),endR(er,sp.old?.55:.4));
+    return{w:(sp.old?.83:.86)*Math.max(k,.05),yb:1.8+Y,ym:1.83+Y,yt:1.862+Y+ (1-k)*-.03,nt:sp.old?2.5:3,nb:8};
   };
   bodyMesh(loftBody(roofFn,sp.A,sp.Rr,{S:34,N:30}),kind==='supercar'?M.glassDark:M_,kind==='supercar'?M.glassDark:M_,kind==='supercar'?M.glassDark:M_);
   if(kind==='supercar')for(const sx of [-1,0,1])tube([sx*.8,1.86+Y,sp.A+.05],[sx*.8,1.86+Y,sp.Rr-.05],.03,M_);
   /* ---- wheels, arches ---- */
-  for(const sx of [-1,1])for(const wz of [-sp.wheelF,sp.wheelR])archDetail(sx,wxc,wy,wz,R,M.black,W-.004);
+  for(const sx of [-1,1])for(const wz of [-sp.wheelF,sp.wheelR])archDetail(sx,wxc,wy,wz,R,M.black,W+(sp.bulge||0)*.2);
   placeWheels({wheelF:sp.wheelF,wheelR:sp.wheelR,wx:wxc},R,sp.wd,sp.rim);
   /* ---- pillars ---- */
   const roofTop=1.84+Y;
@@ -1953,8 +1954,8 @@ function buildSaloon(kind){
   const trim=kind==='supercar'?M.superTrim:M.black;
   /* ---- per-model extras ---- */
   if(kind==='race'){
-    // black rubber side strips, mudflap-ish trim, big square tail lights
-    for(const sx of [-1,1]){rbox(.025,.07,3.7,.012,M.black,sx*(W+.004),.62,.0);rbox(.03,.05,.5,.012,M.black,sx*(W+.002),.46,-1.5)}
+      // black rubber side strips, mudflap-ish trim, big square tail lights
+    for(const sx of [-1,1]){rbox(.025,.07,3.7,.012,M.black,sx*(W+.045),.62,.0);rbox(.03,.05,.5,.012,M.black,sx*(W+.002),.46,-1.5)}
     for(const sx of [-1,1]){rbox(.36,.2,.05,.02,mk(0xc42020,.35,0,{emissive:lin(0x440808)}),sx*.66,belt-.06,tz+.012);rbox(.14,.1,.05,.02,mk(0xe8a030,.35,0,{emissive:lin(0x553300)}),sx*.5,belt-.2,tz+.012)}
     rbox(1.98,.2,.2,.07,M.black,0,.44,tz-.06);                      // rear bumper
     ell(.03,.5,.03,M.black,.78,1.7+Y,.5).visible=false;
@@ -1979,7 +1980,7 @@ function buildSaloon(kind){
 function makeDoorSaloon(s,kind,stat){
   const sp=SAL[kind]||SAL.race,Y=SHP.roof,W=sp.w,belt=sp.belt,roofTop=1.84+Y;
   const L=sp.dz-sp.cowl;
-  const piv=new THREE.Group();piv.position.set(s*(W-.012),0,sp.cowl);const home=PARENT;(stat?PARENT:shellG).add(piv);PARENT=piv;
+  const piv=new THREE.Group();piv.position.set(s*(W-.012+(sp.bulge||0)*.8),0,sp.cowl);const home=PARENT;(stat?PARENT:shellG).add(piv);PARENT=piv;
   const M_=(kind==='pickup')?M.jeep:M.red;
   // lower panel (z' = z-cowl)
   const rr=.1;
@@ -2356,16 +2357,18 @@ Object.assign(M,{
 function makeGlove(hand,cuff){
   hand=hand||M.skinD;cuff=cuff||M.hoodD;
   const gr=new THREE.Group(),hands=[];
-  hands.push(rbox(.082,.032,.092,.014,hand,0,0,0,gr,4));
-  const cf=cyl(.04,.06,cuff,0,0,.08,gr,Math.PI/2,0,12);
+  hands.push(rbox(.1,.04,.1,.018,hand,0,0,0,gr,4));
+  const cf=cyl(.05,.07,cuff,0,0,.09,gr,Math.PI/2,0,14);
   for(let f=0;f<4;f++){
-    const x=(f-1.5)*.021,len=f===0||f===3?.05:.058;
-    const a=cyl(.0095,len,hand,x,.0,-.045-len/2,gr,Math.PI/2,0,8);hands.push(a);
-    const j=mkm(new THREE.SphereGeometry(.0105,8,6),hand,x,.0,-.045-len,gr);hands.push(j);
-    const b=cyl(.0088,.034,hand,x,-.017,-.045-len-.008,gr,Math.PI/2+.9,0,8);hands.push(b);
-    const t=mkm(new THREE.SphereGeometry(.0092,8,6),hand,x,-.034,-.045-len+.012,gr);hands.push(t);
+    const x=(f-1.5)*.025,len=f===0||f===3?.05:.06;
+    hands.push(mkm(new THREE.SphereGeometry(.0165,10,8),hand,x,.0,-.05,gr));
+    hands.push(cyl(.0125,len,hand,x,.0,-.05-len/2,gr,Math.PI/2,0,10));
+    hands.push(mkm(new THREE.SphereGeometry(.0135,10,8),hand,x,.0,-.05-len,gr));
+    hands.push(cyl(.0115,.036,hand,x,-.019,-.05-len-.006,gr,Math.PI/2+.95,0,10));
+    hands.push(mkm(new THREE.SphereGeometry(.0115,10,8),hand,x,-.036,-.05-len+.014,gr));
   }
-  const th=cyl(.0115,.055,hand,.05,-.004,-.03,gr,Math.PI/2,0,8);th.rotation.set(Math.PI/2,0,-.9);hands.push(th);
+  const th=cyl(.0155,.06,hand,.056,-.006,-.03,gr,Math.PI/2,0,10);th.rotation.set(Math.PI/2,0,-.9);hands.push(th);
+  hands.push(mkm(new THREE.SphereGeometry(.0165,10,8),hand,.082,-.01,-.055,gr));
   gr.userData={hands,cuff:cf};
   car.add(gr);return gr;
 }
